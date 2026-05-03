@@ -18,7 +18,7 @@ body{min-height:100%;min-height:100dvh;background:#f5f5f7;color:#1a1a1a;font-fam
   .card,.metric,.order-card,.topbar{background:#2c2c2e!important}
   .card,.metric,.order-card,.topbar,.op-selector{border-color:rgba(255,255,255,0.1)!important}
   input,select,.day-btn,.shift-btn,.qb,.btn-o,.cash-input,.op-btn{background:#3a3a3c!important;color:#f2f2f7!important;border-color:rgba(255,255,255,0.15)!important}
-  .m-lbl,.topbar-sub,.pprice,.oprev,.oi-qty,.sec-lbl,.cl,.hist-detail,.back-btn,.pay-sub-lbl{color:#aeaeb2!important}
+  .m-lbl,.topbar-sub,.pprice,.oprev,.oi-qty,.sec-lbl,.cl,.hist-detail,.back-btn,.pay-sub-lbl,.team-title{color:#aeaeb2!important}
   .empty{color:#6e6e73!important}
   .divider,.oi,.prod-row,.ototal,.hist-row,.order-body,.op-row{border-color:rgba(255,255,255,0.1)!important}
   .tag-void{background:#3a3a3c!important;color:#aeaeb2!important}
@@ -146,7 +146,8 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
 .member-chip{display:inline-flex;align-items:center;gap:6px;background:#f5f5f7;border:0.5px solid rgba(0,0,0,0.15);border-radius:20px;padding:5px 12px;font-size:13px;margin:3px}
 .member-chip .del-member{background:none;border:none;cursor:pointer;color:#aeaeb2;font-size:16px;padding:0;line-height:1;touch-action:manipulation}
 .member-chip .del-member:active{color:var(--red)}
-.member-list{display:flex;flex-wrap:wrap;margin-bottom:10px;min-height:32px}
+.member-list{display:flex;flex-wrap:wrap;margin-bottom:6px;min-height:32px}
+.team-title{font-size:13px;font-weight:600;color:#6e6e73;margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -182,9 +183,22 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
         <div><label>B 位</label><select id="sel-b"></select></div>
       </div>
       <div class="cl" style="margin-bottom:6px">管理人員名單</div>
-      <div class="member-list" id="member-list"></div>
+      
+      <!-- 幹部區塊 -->
+      <div class="team-title">幹部</div>
+      <div class="member-list" id="member-list-core"></div>
+      
+      <!-- 儲備幹部區塊 -->
+      <div class="team-title" style="margin-top:8px">儲備幹部</div>
+      <div class="member-list" id="member-list-reserve" style="margin-bottom:12px"></div>
+      
+      <!-- 新增輸入框 -->
       <div style="display:flex;gap:8px">
-        <input id="new-member-input" placeholder="輸入新人員姓名" style="flex:1;height:40px;font-size:14px">
+        <select id="new-member-type" style="width:110px;height:40px;font-size:14px;padding:0 8px;">
+          <option value="core">幹部</option>
+          <option value="reserve">儲備幹部</option>
+        </select>
+        <input id="new-member-input" placeholder="輸入姓名" style="flex:1;height:40px;font-size:14px">
         <button class="btn btn-p btn-sm" onclick="addMember()" style="flex-shrink:0">新增</button>
       </div>
     </div></div>
@@ -310,7 +324,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
         <span style="font-size:14px;font-weight:500">應收</span>
         <span id="pay-exp" style="font-size:28px;font-weight:700;color:var(--blue)">NT$0</span>
       </div>
-      <!-- 新增：備註輸入框 -->
       <input id="pay-memo" type="text" placeholder="新增訂單備註 (選填，例如: 顧客統編)" style="height:40px;font-size:14px;background:#f5f5f7;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--rs);width:100%;padding:0 10px;">
     </div></div>
     <div class="card"><div class="ci">
@@ -335,7 +348,9 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
 
 <script>
 /* ===== 設定 ===== */
-let MEMBERS=['許紘睿','陳怡岑','李懿珊','林靜玟','陳竫媗','顏紹耘','陳昱亘','陶玉慧','陳耀豐','張群佑','張翊閎','藍于驊','方鈺瑜','簡宇彥','林祺臻'];
+let MEMBERS_CORE=['許紘睿','陳怡岑','李懿珊','林靜玟','陳竫媗','顏紹耘','陳昱亘','陶玉慧','陳耀豐','張群佑','張翊閎','藍于驊','方鈺瑜','簡宇彥','林祺臻'];
+let MEMBERS_RESERVE=['賴杏恩','吳宥勝','羅允威','陳采靖','吳安琪','韓洛君','鄭天愛','楊旻姍','楊逸宇','陳稚昇','王立綺','林聖倫','雲馨葳','丁郁婷','尹邦臻','張祐容','江俊諺','郭家妤'];
+
 const PRODUCTS=[{n:'泡泡水',p:20},{n:'打火機',p:50},{n:'資料夾',p:40},{n:'貼紙',p:5},{n:'吊飾',p:30},{n:'徽章',p:30},{n:'卡套(出清)',p:20}];
 const DAYS=['5/11','5/12','5/13','5/14','5/15'];
 const SHEET_ID='12AbQUXDtkU6mFiOSIgOSJj1CCUw5Ir4hAaZC_uyf-6k';
@@ -388,29 +403,81 @@ window.addEventListener('popstate',function(e){
 history.replaceState({screen:'s-setup'},'',location.pathname);
 
 /* ---- Members ---- */
-function saveMem(){try{localStorage.setItem('lw_members',JSON.stringify(MEMBERS))}catch(e){}}
-function loadMem(){try{const d=localStorage.getItem('lw_members');if(d){MEMBERS=JSON.parse(d)}}catch(e){}}
+function saveMem(){
+  try{
+    localStorage.setItem('lw_members_core',JSON.stringify(MEMBERS_CORE));
+    localStorage.setItem('lw_members_res',JSON.stringify(MEMBERS_RESERVE));
+  }catch(e){}
+}
+function loadMem(){
+  try{
+    const d1=localStorage.getItem('lw_members_core');
+    const d2=localStorage.getItem('lw_members_res');
+    
+    // 相容並繼承舊版資料 (若有的話)
+    const dOld=localStorage.getItem('lw_members');
+    if(!d1 && !d2 && dOld){
+      MEMBERS_CORE = JSON.parse(dOld);
+      saveMem(); // 轉存成新格式
+    } else {
+      if(d1) MEMBERS_CORE=JSON.parse(d1);
+      if(d2) MEMBERS_RESERVE=JSON.parse(d2);
+    }
+  }catch(e){}
+}
 function renderMemberList(){
-  document.getElementById('member-list').innerHTML=MEMBERS.map((m,i)=>`
+  // 渲染標籤
+  document.getElementById('member-list-core').innerHTML=MEMBERS_CORE.map((m,i)=>`
     <span class="member-chip">${m}
-      <button class="del-member" onclick="delMember(${i})" title="移除">×</button>
+      <button class="del-member" onclick="delMember('core', ${i})" title="移除">×</button>
     </span>`).join('');
-  const opts=MEMBERS.map(m=>`<option>${m}</option>`).join('');
-  document.getElementById('sel-a').innerHTML=opts;
-  document.getElementById('sel-b').innerHTML=opts;
-  if(MEMBERS.length>1)document.getElementById('sel-b').selectedIndex=1;
+    
+  document.getElementById('member-list-reserve').innerHTML=MEMBERS_RESERVE.map((m,i)=>`
+    <span class="member-chip">${m}
+      <button class="del-member" onclick="delMember('reserve', ${i})" title="移除">×</button>
+    </span>`).join('');
+
+  // 渲染下拉選單 (Optgroup分群)
+  const coreOpts=MEMBERS_CORE.map(m=>`<option value="${m}">${m}</option>`).join('');
+  const resOpts=MEMBERS_RESERVE.map(m=>`<option value="${m}">${m}</option>`).join('');
+  
+  let allOpts = '';
+  if(MEMBERS_CORE.length > 0) allOpts += `<optgroup label="幹部">${coreOpts}</optgroup>`;
+  if(MEMBERS_RESERVE.length > 0) allOpts += `<optgroup label="儲備幹部">${resOpts}</optgroup>`;
+
+  document.getElementById('sel-a').innerHTML=allOpts;
+  document.getElementById('sel-b').innerHTML=allOpts;
+  
+  // 智慧預設選項: A選第一個幹部, B選第二個幹部或第一個儲備幹部
+  if(MEMBERS_CORE.length > 1) {
+    document.getElementById('sel-b').selectedIndex=1;
+  } else if (MEMBERS_RESERVE.length > 0 && MEMBERS_CORE.length === 1) {
+    document.getElementById('sel-b').selectedIndex=1;
+  }
 }
 function addMember(){
-  const inp=document.getElementById('new-member-input');
-  const name=inp.value.trim();
+  const type = document.getElementById('new-member-type').value;
+  const inp = document.getElementById('new-member-input');
+  const name = inp.value.trim();
   if(!name){alert('請輸入姓名');return}
-  if(MEMBERS.includes(name)){alert('此人員已在名單中');return}
-  MEMBERS.push(name);saveMem();
-  inp.value='';renderMemberList();
+  if(MEMBERS_CORE.includes(name) || MEMBERS_RESERVE.includes(name)){alert('此人員已在名單中');return}
+  
+  if(type === 'core') MEMBERS_CORE.push(name);
+  else MEMBERS_RESERVE.push(name);
+  
+  saveMem();
+  inp.value='';
+  renderMemberList();
 }
-function delMember(i){
-  if(!window.confirm(`確定移除「${MEMBERS[i]}」？`))return;
-  MEMBERS.splice(i,1);saveMem();renderMemberList();
+function delMember(type, i){
+  const name = type === 'core' ? MEMBERS_CORE[i] : MEMBERS_RESERVE[i];
+  if(!window.confirm(`確定移除「${name}」？`))return;
+  
+  if(type === 'core') MEMBERS_CORE.splice(i,1);
+  else MEMBERS_RESERVE.splice(i,1);
+  
+  saveMem();
+  renderMemberList();
 }
 
 /* ---- Init ---- */
@@ -498,7 +565,6 @@ function ocard(o,showPay){
   const payBtn=showPay&&o.status==='pending'?`<button class="btn btn-g btn-xs" onclick="event.stopPropagation();openPay(${o.id})" style="flex-shrink:0">收款</button>`:'';
   const voidBtn=!showPay&&o.status==='pending'?`<button class="btn btn-d btn-xs" onclick="event.stopPropagation();voidOrder(${o.id})" style="flex-shrink:0">作廢</button>`:'';
   const done=o.status==='paid'?`<div class="pay-done">實收 ${nt(o.rcv)}　找零 ${nt(o.chg)}　${o.paidAt}</div>`:'';
-  // 顯示備註如果有的話
   const memoHtml = (o.memo && o.memo.trim() !== '') ? `<div style="font-size:12px;color:#854F0B;margin-top:6px;background:#FFFBEA;padding:4px 8px;border-radius:4px;">備註: ${o.memo}</div>` : '';
   
   return`<div class="order-card">
@@ -595,7 +661,7 @@ function loadPay(o){
   document.getElementById('pay-rcv').value='';
   document.getElementById('pay-chg').textContent='—';
   document.getElementById('pay-chg').style.color='#aeaeb2';
-  document.getElementById('pay-memo').value = o.memo || ''; // 清空或帶入原有的備註
+  document.getElementById('pay-memo').value = o.memo || '';
 }
 function calcChg(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
@@ -614,7 +680,7 @@ function confirmPay(){
   o.rcv=rcv;
   o.chg=rcv-o.total;
   o.paidAt=ts();
-  o.memo=document.getElementById('pay-memo').value.trim(); // 存入備註
+  o.memo=document.getElementById('pay-memo').value.trim();
   updateM();renderShift();
   navStack=navStack.filter(s=>s!=='s-pay');
   show('s-shift',false);
@@ -633,16 +699,12 @@ function endShift(){
 /* ---- Persist ---- */
 function saveShifts(){try{localStorage.setItem('lw5_shifts',JSON.stringify(allShifts))}catch(e){}}
 function loadShifts(){try{const d=localStorage.getItem('lw5_shifts');if(d)allShifts=JSON.parse(d)}catch(e){allShifts=[]}renderHist()}
-
-/* ---- 修復刪除歷史按鈕 ---- */
 function delShift(i){
-  // 強制使用 window.confirm，避免手機版被阻擋
   if(!window.confirm('確定要刪除這筆班次紀錄嗎？這將無法復原。')) return;
   allShifts.splice(i, 1);
   saveShifts();
   renderHist();
 }
-
 function renderHist(){
   const w=document.getElementById('hist-wrap');
   if(!allShifts.length){w.style.display='none';return}
@@ -657,7 +719,6 @@ function renderHist(){
         </div>
         <div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:var(--green)">${nt(s.revenue)}</strong></div>
       </div>
-      <!-- 修正點擊事件冒泡 -->
       <button class="btn btn-d btn-sm" onclick="event.stopPropagation(); delShift(${i})">刪除</button>
     </div>`).join('');
 }
@@ -669,22 +730,18 @@ function exportAll(){
   const headers=['日期','班次','A位','B位','訂單數','已收款數','班次營收(NT$)','訂單明細','開班','結班','備註'];
   
   const rows=pend.map(s=> {
-    // 收集該班次底下的備註與測試標籤
     let memoParts = [];
     if (s.isTest) memoParts.push('【測試資料】');
-    
-    // 抓出有備註的訂單，並標上訂單編號
     let orderMemos = s.orders
       .filter(o => o.memo && o.memo.trim() !== '')
       .map(o => `${onum(o)}備註: ${o.memo.trim()}`);
-    
     if (orderMemos.length > 0) memoParts.push(orderMemos.join(' | '));
 
     return [
       s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
       s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),
       s.startAt,s.endAt,
-      memoParts.join(' | ') // 把測試標籤跟各個訂單備註放進 K 欄
+      memoParts.join(' | ') 
     ];
   });
 
