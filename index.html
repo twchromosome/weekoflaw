@@ -27,6 +27,8 @@ body{min-height:100%;min-height:100dvh;background:#f5f5f7;color:#1a1a1a;font-fam
   .btn-o{color:#f2f2f7!important}
   .order-hd:active{background:#3a3a3c!important}
   .test-banner{background:#2a1f00!important;border-color:#EF9F27!important}
+  /* 修復人員名單在深色模式下白底白字的問題 */
+  .member-chip{background:#3a3a3c!important;color:#f2f2f7!important;border-color:rgba(255,255,255,0.15)!important}
 }
 #app{width:100%;max-width:600px;margin:0 auto;min-height:100dvh;background:inherit;display:flex;flex-direction:column}
 .screen{display:none;flex-direction:column;flex:1}
@@ -653,10 +655,14 @@ function exportAll(){
   ]);
   const msgEl=document.getElementById('exp-msg');
   if(GAS_URL){
-    fetch(GAS_URL,{method:'POST',body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})})
+    fetch(GAS_URL,{
+      method:'POST',
+      redirect: 'follow', // 加強跨網域重新導向的支援
+      body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})
+    })
       .then(r=>r.json())
       .then(()=>{pend.forEach(s=>s.exported=true);saveShifts();renderHist();msgEl.className='notice n-ok';msgEl.textContent=`✓ 成功匯出 ${pend.length} 個班次至 Google Sheet`;})
-      .catch(()=>{msgEl.className='notice n-err';msgEl.textContent='連線失敗，請確認 Apps Script URL'});
+      .catch(()=>{msgEl.className='notice n-err';msgEl.textContent='連線失敗，請確認 Apps Script 部署權限是否有設為「所有人」';});
   } else {
     pend.forEach(s=>s.exported=true);saveShifts();renderHist();
     msgEl.className='notice n-warn';
