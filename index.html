@@ -2,96 +2,100 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="法律週攤位">
 <meta name="theme-color" content="#534AB7">
 <title>法律週攤位系統</title>
 <style>
-:root{--r:12px;--rs:8px}
+:root{--r:12px;--rs:8px;--purple:#534AB7;--purple-d:#3C3489;--purple-l:#EEEDFE;--green:#0F6E56;--green-l:#E1F5EE;--amber:#854F0B;--amber-l:#FAEEDA;--red:#A32D2D;--red-l:#FCEBEB;--blue:#185FA5;--blue-l:#E6F1FB;--coral:#993C1D;--coral-l:#FAECE7;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#f5f5f7;color:#1a1a1a;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:16px}
+html{height:100%;overflow-x:hidden}
+body{min-height:100%;min-height:100dvh;background:#f5f5f7;color:#1a1a1a;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:16px;overflow-x:hidden}
 @media(prefers-color-scheme:dark){
-  html,body{background:#1c1c1e;color:#f2f2f7}
-  .card{background:#2c2c2e!important;border-color:rgba(255,255,255,0.1)!important}
-  .topbar{background:#2c2c2e!important;border-color:rgba(255,255,255,0.1)!important}
-  input,select,.day-btn,.shift-btn,.qb,.btn-o,.cash-input{background:#3a3a3c!important;color:#f2f2f7!important;border-color:rgba(255,255,255,0.15)!important}
-  .metric{background:#2c2c2e!important;border-color:rgba(255,255,255,0.1)!important}
-  .order-card{background:#2c2c2e!important;border-color:rgba(255,255,255,0.1)!important}
-  .m-lbl,.topbar-sub,.pprice,.oprev,.oi-qty,.back-btn,.sec-lbl,.cl,.hist-detail{color:#aeaeb2!important}
+  body{background:#1c1c1e;color:#f2f2f7}
+  .card,.metric,.order-card,.topbar{background:#2c2c2e!important}
+  .card,.metric,.order-card,.topbar,.op-selector{border-color:rgba(255,255,255,0.1)!important}
+  input,select,.day-btn,.shift-btn,.qb,.btn-o,.cash-input,.op-btn{background:#3a3a3c!important;color:#f2f2f7!important;border-color:rgba(255,255,255,0.15)!important}
+  .m-lbl,.topbar-sub,.pprice,.oprev,.oi-qty,.sec-lbl,.cl,.hist-detail,.back-btn,.pay-sub-lbl{color:#aeaeb2!important}
   .empty{color:#6e6e73!important}
-  .divider,.card-div{background:rgba(255,255,255,0.1)!important}
-  .order-body,.oi,.prod-row,.ototal,.hist-row{border-color:rgba(255,255,255,0.1)!important}
+  .divider,.oi,.prod-row,.ototal,.hist-row,.order-body,.op-row{border-color:rgba(255,255,255,0.1)!important}
   .tag-void{background:#3a3a3c!important;color:#aeaeb2!important}
-  .op-indicator.op-ind-a{background:#1a2540!important;border-color:#378ADD!important}
-  .op-indicator.op-ind-b{background:#2d1a14!important;border-color:#D85A30!important}
-  .op-selector{border-color:rgba(255,255,255,0.15)!important}
-  .op-btn{background:#3a3a3c!important;border-color:rgba(255,255,255,0.1)!important}
-  .new-footer-purple{background:#2a2560!important;border-color:#534AB7!important}
-  .new-footer-coral{background:#2d1a14!important;border-color:#993C1D!important}
-  .op-btn.sel-a{background:#1a2540!important}
-  .op-btn.sel-b{background:#2d1a14!important}
+  .op-ind-a{background:#1a2540!important;border-color:#378ADD!important}
+  .op-ind-b{background:#2d1a14!important;border-color:#D85A30!important}
+  .btn-o{color:#f2f2f7!important}
+  .order-hd:active{background:#3a3a3c!important}
+  .test-banner{background:#2a1f00!important;border-color:#EF9F27!important}
 }
-#app{max-width:600px;margin:0 auto;min-height:100%;background:inherit}
-.screen{display:none}.screen.active{display:block}
-.topbar{background:#fff;border-bottom:0.5px solid rgba(0,0,0,0.1);padding:12px 16px;position:sticky;top:0;z-index:50}
-.topbar-title{font-size:17px;font-weight:500}
-.topbar-sub{font-size:12px;color:#6e6e73;margin-top:1px}
-.content{padding:10px 14px 60px}
+#app{width:100%;max-width:600px;margin:0 auto;min-height:100dvh;background:inherit;display:flex;flex-direction:column}
+.screen{display:none;flex-direction:column;flex:1}
+.screen.active{display:flex}
+.topbar{background:#fff;border-bottom:0.5px solid rgba(0,0,0,0.1);padding:12px 16px;padding-top:calc(12px + var(--safe-top));position:sticky;top:0;z-index:50;flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:17px;font-weight:600}
+.topbar-sub{font-size:12px;color:#6e6e73;margin-top:2px}
+.content{flex:1;overflow-y:auto;padding:10px 14px;padding-bottom:calc(24px + var(--safe-bot));-webkit-overflow-scrolling:touch}
 .card{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--r);margin-bottom:10px}
 .ci{padding:14px}
-.cl{font-size:11px;font-weight:500;color:#6e6e73;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.cl{font-size:11px;font-weight:600;color:#6e6e73;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.divider{height:0.5px;background:rgba(0,0,0,0.08);margin:12px 0}
 input,select{width:100%;height:46px;font-size:16px;padding:0 12px;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);background:#f5f5f7;color:#1a1a1a;font-family:inherit;-webkit-appearance:none;appearance:none}
-input:focus,select:focus{outline:none;border-color:#534AB7;box-shadow:0 0 0 2px rgba(83,74,183,.15)}
+input:focus,select:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px rgba(83,74,183,.15)}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:500}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 16px;border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation}
-.btn:active{opacity:.72}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 16px;border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:inherit;touch-action:manipulation;transition:opacity .1s}
+.btn:active{opacity:.7}
 .btn-full{width:100%}
-.btn-p{background:#534AB7;color:#fff}
-.btn-g{background:#0F6E56;color:#fff}
+.btn-p{background:var(--purple);color:#fff}
+.btn-g{background:var(--green);color:#fff}
 .btn-o{background:#f5f5f7;color:#1a1a1a;border:0.5px solid rgba(0,0,0,0.2)}
-.btn-d{background:#FCEBEB;color:#A32D2D}
-.btn-ghost{background:none;border:none;color:#6e6e73}
+.btn-d{background:var(--red-l);color:var(--red)}
+.btn-ghost{background:none;border:none;color:#6e6e73;padding-left:0}
 .btn-sm{min-height:36px;font-size:13px;padding:0 12px}
 .btn-xs{min-height:30px;font-size:12px;padding:0 10px}
-.btn-lg{min-height:54px;font-size:17px;font-weight:500}
+.btn-lg{min-height:54px;font-size:17px;font-weight:600}
+.btn-test{background:#FAEEDA;color:#854F0B;border:0.5px solid #EF9F27}
+.back-btn{display:flex;align-items:center;gap:4px;font-size:15px;color:#6e6e73;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;touch-action:manipulation;min-height:36px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.day-btn{height:50px;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);background:#f5f5f7;font-size:14px;font-weight:500;cursor:pointer;color:#6e6e73;touch-action:manipulation}
-.day-btn.sel{background:#534AB7;color:#fff;border-color:#534AB7}
+.day-btn{height:50px;border:2px solid rgba(0,0,0,0.15);border-radius:var(--rs);background:#f5f5f7;font-size:14px;font-weight:600;cursor:pointer;color:#6e6e73;touch-action:manipulation;transition:all .15s}
+.day-btn.sel{background:var(--purple)!important;color:#fff!important;border-color:var(--purple)!important;font-weight:700}
 .shift-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.shift-btn{min-height:62px;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);background:#f5f5f7;cursor:pointer;font-family:inherit;color:#6e6e73;padding:8px 4px;touch-action:manipulation}
-.shift-btn .sn{font-size:16px;font-weight:500;display:block}
+.shift-btn{min-height:70px;border:2px solid rgba(0,0,0,0.15);border-radius:var(--rs);background:#f5f5f7;cursor:pointer;font-family:inherit;color:#6e6e73;padding:10px 6px;touch-action:manipulation;transition:all .15s}
+.shift-btn .sn{font-size:16px;font-weight:600;display:block}
 .shift-btn .st{font-size:11px;display:block;margin-top:3px;color:#aeaeb2}
-.shift-btn.sel-m{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
-.shift-btn.sel-a{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
-.shift-btn.sel-e{background:#FAEEDA;color:#854F0B;border-color:#EF9F27}
+.shift-btn.sel-m{background:var(--purple-l)!important;color:var(--purple-d)!important;border-color:var(--purple)!important;border-width:2.5px}
+.shift-btn.sel-a{background:var(--green-l)!important;color:var(--green)!important;border-color:var(--green)!important;border-width:2.5px}
+.shift-btn.sel-e{background:var(--amber-l)!important;color:var(--amber)!important;border-color:#EF9F27!important;border-width:2.5px}
+.shift-btn.sel-m::after,.shift-btn.sel-a::after,.shift-btn.sel-e::after{content:'✓';font-size:13px;font-weight:700;display:block;margin-top:2px}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .metric{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--rs);padding:10px 12px}
 .m-lbl{font-size:11px;color:#aeaeb2;margin-bottom:2px}
-.m-val{font-size:22px;font-weight:500}
-.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
-.bm{background:#EEEDFE;color:#3C3489}.ba{background:#E1F5EE;color:#0F6E56}.be{background:#FAEEDA;color:#854F0B}
-.tag{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
-.tag-paid{background:#E1F5EE;color:#0F6E56}
-.tag-pend{background:#FAEEDA;color:#854F0B}
+.m-val{font-size:24px;font-weight:600}
+.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:600}
+.bm{background:var(--purple-l);color:var(--purple-d)}
+.ba{background:var(--green-l);color:var(--green)}
+.be{background:var(--amber-l);color:var(--amber)}
+.tag{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+.tag-paid{background:var(--green-l);color:var(--green)}
+.tag-pend{background:var(--amber-l);color:var(--amber)}
 .tag-void{background:#f1f0e8;color:#aeaeb2}
-.op-a{font-size:11px;padding:2px 8px;border-radius:20px;background:#E6F1FB;color:#185FA5;font-weight:500;white-space:nowrap}
-.op-b{font-size:11px;padding:2px 8px;border-radius:20px;background:#FAECE7;color:#993C1D;font-weight:500;white-space:nowrap}
-.op-selector{display:grid;grid-template-columns:1fr 1fr;gap:0;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);overflow:hidden;margin-bottom:10px}
-.op-btn{min-height:48px;border:none;background:#f5f5f7;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;touch-action:manipulation;color:#6e6e73;border-right:0.5px solid rgba(0,0,0,0.1)}
+.tag-test{background:#FAEEDA;color:#854F0B;border:0.5px solid #EF9F27}
+.op-a{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blue-l);color:var(--blue);font-weight:600;white-space:nowrap}
+.op-b{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--coral-l);color:var(--coral);font-weight:600;white-space:nowrap}
+.op-selector{display:grid;grid-template-columns:1fr 1fr;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);overflow:hidden;margin-bottom:10px}
+.op-btn{min-height:50px;border:none;background:#f5f5f7;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;touch-action:manipulation;color:#6e6e73;border-right:0.5px solid rgba(0,0,0,0.1);transition:all .15s}
 .op-btn:last-child{border-right:none}
-.op-btn.sel-a{background:#E6F1FB;color:#185FA5}
-.op-btn.sel-b{background:#FAECE7;color:#993C1D}
+.op-btn.sel-a{background:var(--blue-l);color:var(--blue);font-weight:700}
+.op-btn.sel-b{background:var(--coral-l);color:var(--coral);font-weight:700}
 .op-indicator{border-radius:var(--rs);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
-.op-ind-a{background:#E6F1FB;border:0.5px solid #85B7EB}
-.op-ind-b{background:#FAECE7;border:0.5px solid #F0997B}
-.op-ind-name{font-size:15px;font-weight:500}
-.op-ind-name-a{color:#185FA5}
-.op-ind-name-b{color:#993C1D}
+.op-ind-a{background:var(--blue-l);border:1.5px solid #85B7EB}
+.op-ind-b{background:var(--coral-l);border:1.5px solid #F0997B}
+.op-ind-name{font-size:15px;font-weight:600}
+.op-ind-name-a{color:var(--blue)}
+.op-ind-name-b{color:var(--coral)}
 .op-ind-hint{font-size:12px;margin-top:1px}
 .op-ind-hint-a{color:#378ADD}
 .op-ind-hint-b{color:#D85A30}
@@ -100,50 +104,63 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
 .pname{font-size:15px;font-weight:500;flex:1}
 .pprice{font-size:12px;color:#6e6e73;margin-top:2px}
 .qctrl{display:flex;align-items:center;gap:8px}
-.qb{width:40px;height:40px;border:0.5px solid rgba(0,0,0,0.2);background:#f5f5f7;border-radius:var(--rs);cursor:pointer;font-size:20px;color:#1a1a1a;display:flex;align-items:center;justify-content:center;touch-action:manipulation;flex-shrink:0}
+.qb{width:42px;height:42px;border:0.5px solid rgba(0,0,0,0.2);background:#f5f5f7;border-radius:var(--rs);cursor:pointer;font-size:22px;color:#1a1a1a;display:flex;align-items:center;justify-content:center;touch-action:manipulation;flex-shrink:0}
 .qb:active{opacity:.6}
-.qn{min-width:32px;text-align:center;font-size:18px;font-weight:500}
+.qn{min-width:34px;text-align:center;font-size:18px;font-weight:600}
 .order-card{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--rs);margin-bottom:8px;overflow:hidden}
 .order-hd{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;touch-action:manipulation}
 .order-hd:active{background:#f5f5f7}
-.onum{font-size:12px;font-weight:500;color:#aeaeb2;min-width:38px}
+.onum{font-size:12px;font-weight:600;color:#aeaeb2;min-width:38px}
 .osum{flex:1;min-width:0}
-.oamt{font-size:15px;font-weight:500;display:flex;align-items:center;gap:6px}
+.oamt{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .oprev{font-size:12px;color:#6e6e73;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .order-body{padding:10px 14px;border-top:0.5px solid rgba(0,0,0,0.08);display:none}
 .order-body.open{display:block}
 .oi{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-bottom:0.5px solid rgba(0,0,0,0.06)}
 .oi:last-child{border-bottom:none}
 .oi-qty{color:#6e6e73;margin:0 8px}
-.oi-sub{font-weight:500}
-.ototal{display:flex;justify-content:space-between;font-size:14px;font-weight:500;padding-top:8px}
-.pay-done{font-size:12px;color:#0F6E56;padding:8px 14px;border-top:0.5px solid rgba(0,0,0,0.08);background:#E1F5EE}
-.cash-input{width:100%;height:68px;font-size:28px;font-weight:500;padding:0 14px;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);background:#f5f5f7;color:#1a1a1a;font-family:inherit;text-align:right;-webkit-appearance:none;appearance:none}
-.cash-input:focus{outline:none;border-color:#534AB7}
-.change-big{font-size:38px;font-weight:500;text-align:center;padding:14px 0}
-.ptitle{font-size:17px;font-weight:500}
-.back-btn{display:flex;align-items:center;gap:4px;font-size:15px;color:#6e6e73;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;touch-action:manipulation}
+.oi-sub{font-weight:600}
+.ototal{display:flex;justify-content:space-between;font-size:14px;font-weight:600;padding-top:8px}
+.pay-done{font-size:12px;color:var(--green);padding:8px 14px;border-top:0.5px solid rgba(0,0,0,0.08);background:var(--green-l)}
+.op-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.cash-input{width:100%;height:68px;font-size:30px;font-weight:600;padding:0 14px;border:0.5px solid rgba(0,0,0,0.2);border-radius:var(--rs);background:#f5f5f7;color:#1a1a1a;font-family:inherit;text-align:right;-webkit-appearance:none;appearance:none}
+.cash-input:focus{outline:none;border-color:var(--purple)}
+.change-big{font-size:40px;font-weight:700;text-align:center;padding:12px 0}
+.pay-sub-lbl{font-size:13px;color:#6e6e73;margin-bottom:2px;text-align:center}
 .hist-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:0.5px solid rgba(0,0,0,0.08)}
 .hist-row:last-child{border-bottom:none}
 .hist-info{flex:1}
-.hist-name{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.hist-name{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .hist-detail{font-size:12px;color:#6e6e73}
-.gs-btn{width:100%;min-height:48px;background:#0F9D58;color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:manipulation;margin-top:10px}
+.gs-btn{width:100%;min-height:50px;background:#0F9D58;color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:manipulation;margin-top:10px}
 .gs-btn:active{background:#085041}
 .notice{border-radius:var(--rs);padding:10px 14px;font-size:13px;margin-top:8px;line-height:1.5}
-.n-ok{background:#E1F5EE;color:#0F6E56}.n-err{background:#FCEBEB;color:#A32D2D}
-.sec-lbl{font-size:12px;font-weight:500;color:#6e6e73;letter-spacing:.05em;text-transform:uppercase;margin:12px 0 8px}
+.n-ok{background:var(--green-l);color:var(--green)}
+.n-err{background:var(--red-l);color:var(--red)}
+.n-warn{background:var(--amber-l);color:var(--amber)}
+.sec-lbl{font-size:12px;font-weight:600;color:#6e6e73;letter-spacing:.05em;text-transform:uppercase;margin:12px 0 8px}
 .empty{text-align:center;padding:28px 0;color:#aeaeb2;font-size:14px}
-.ctag{font-size:11px;background:#FAEEDA;color:#854F0B;padding:1px 6px;border-radius:10px;font-weight:500}
-.divider{height:0.5px;background:rgba(0,0,0,0.08);margin:12px 0}
-.op-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.ctag{font-size:11px;background:var(--amber-l);color:var(--amber);padding:1px 6px;border-radius:10px;font-weight:500}
+.test-banner{background:#FFFBEA;border:1.5px solid #EF9F27;border-radius:var(--rs);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#854F0B}
+.member-chip{display:inline-flex;align-items:center;gap:6px;background:#f5f5f7;border:0.5px solid rgba(0,0,0,0.15);border-radius:20px;padding:5px 12px;font-size:13px;margin:3px}
+.member-chip .del-member{background:none;border:none;cursor:pointer;color:#aeaeb2;font-size:16px;padding:0;line-height:1;touch-action:manipulation}
+.member-chip .del-member:active{color:var(--red)}
+.member-list{display:flex;flex-wrap:wrap;margin-bottom:10px;min-height:32px}
 </style>
 </head>
 <body>
 <div id="app">
-
+<!-- ====== SETUP ====== -->
 <div id="s-setup" class="screen active">
-  <div class="topbar"><div class="topbar-title">法律週攤位系統</div><div class="topbar-sub">選擇班次開始作業</div></div>
+  <div class="topbar">
+    <div class="topbar-row">
+      <div>
+        <div class="topbar-title">法律週攤位系統</div>
+        <div class="topbar-sub">選擇班次開始作業</div>
+      </div>
+      <button class="btn btn-test btn-sm" onclick="startTestShift()" style="flex-shrink:0">🧪 測試模式</button>
+    </div>
+  </div>
   <div class="content">
     <div class="card"><div class="ci">
       <div class="cl">日期</div>
@@ -152,23 +169,29 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     <div class="card"><div class="ci">
       <div class="cl">時段</div>
       <div class="shift-grid">
-        <button class="shift-btn" onclick="pickShift(this,'早班','m')"><span class="sn">早班</span><span class="st">10:10–12:10</span></button>
-        <button class="shift-btn" onclick="pickShift(this,'午班','a')"><span class="sn">午班</span><span class="st">12:10–13:10</span></button>
-        <button class="shift-btn" onclick="pickShift(this,'晚班','e')"><span class="sn">晚班</span><span class="st">13:10–15:10</span></button>
+        <button class="shift-btn" id="sb-m" onclick="pickShift(this,'早班','m')"><span class="sn">早班</span><span class="st">10:10–12:10</span></button>
+        <button class="shift-btn" id="sb-a" onclick="pickShift(this,'午班','a')"><span class="sn">午班</span><span class="st">12:10–13:10</span></button>
+        <button class="shift-btn" id="sb-e" onclick="pickShift(this,'晚班','e')"><span class="sn">晚班</span><span class="st">13:10–15:10</span></button>
       </div>
     </div></div>
     <div class="card"><div class="ci">
       <div class="cl">值班人員</div>
-      <div class="g2">
+      <div class="g2" style="margin-bottom:12px">
         <div><label>A 位</label><select id="sel-a"></select></div>
         <div><label>B 位</label><select id="sel-b"></select></div>
+      </div>
+      <div class="cl" style="margin-bottom:6px">管理人員名單</div>
+      <div class="member-list" id="member-list"></div>
+      <div style="display:flex;gap:8px">
+        <input id="new-member-input" placeholder="輸入新人員姓名" style="flex:1;height:40px;font-size:14px">
+        <button class="btn btn-p btn-sm" onclick="addMember()" style="flex-shrink:0">新增</button>
       </div>
     </div></div>
     <button class="btn btn-p btn-full btn-lg" onclick="startShift()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       開始班次
     </button>
-    <div id="hist-wrap" style="display:none;margin-top:18px">
+    <div id="hist-wrap" style="display:none;margin-top:16px">
       <div class="sec-lbl">歷史班次</div>
       <div class="card"><div class="ci"><div id="hist-list"></div></div></div>
       <button class="gs-btn" onclick="exportAll()">
@@ -179,29 +202,30 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     </div>
   </div>
 </div>
-
+<!-- ====== SHIFT MAIN ====== -->
 <div id="s-shift" class="screen">
   <div class="topbar">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span id="shift-badge" class="badge"></span>
-          <span id="shift-staff" style="font-size:13px;color:#6e6e73"></span>
-        </div>
+    <div class="topbar-row">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <span id="shift-badge" class="badge"></span>
+        <span id="shift-staff" style="font-size:12px;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
       </div>
-      <button class="btn btn-d btn-sm" onclick="endShift()">結班</button>
+      <button class="btn btn-d btn-sm" onclick="endShift()" style="flex-shrink:0;margin-left:8px">結班</button>
     </div>
   </div>
   <div class="content">
+    <div id="test-banner-shift" class="test-banner" style="display:none">
+      <span>🧪</span><span>測試模式 — 資料匯出時將標記為「測試」</span>
+    </div>
     <div class="metrics">
-      <div class="metric"><div class="m-lbl">訂單數</div><div class="m-val" style="color:#185FA5" id="m-tot">0</div></div>
-      <div class="metric"><div class="m-lbl">班次營收</div><div class="m-val" style="color:#0F6E56" id="m-rev">$0</div></div>
-      <div class="metric"><div class="m-lbl">待收款</div><div class="m-val" style="color:#854F0B" id="m-pend">0</div></div>
-      <div class="metric"><div class="m-lbl">已收款</div><div class="m-val" style="color:#0F6E56" id="m-paid">0</div></div>
+      <div class="metric"><div class="m-lbl">訂單數</div><div class="m-val" style="color:var(--blue)" id="m-tot">0</div></div>
+      <div class="metric"><div class="m-lbl">班次營收</div><div class="m-val" style="color:var(--green)" id="m-rev">$0</div></div>
+      <div class="metric"><div class="m-lbl">待收款</div><div class="m-val" style="color:var(--amber)" id="m-pend">0</div></div>
+      <div class="metric"><div class="m-lbl">已收款</div><div class="m-val" style="color:var(--green)" id="m-paid">0</div></div>
     </div>
     <div class="card"><div class="ci" style="padding:10px 14px">
       <div class="cl" style="margin-bottom:8px">現在是誰在操作？</div>
-      <div class="op-selector" id="op-selector">
+      <div class="op-selector">
         <button class="op-btn" id="op-btn-a" onclick="switchOp('a')"></button>
         <button class="op-btn" id="op-btn-b" onclick="switchOp('b')"></button>
       </div>
@@ -210,10 +234,10 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
           <div class="op-ind-name op-ind-name-a" id="op-ind-name"></div>
           <div class="op-ind-hint op-ind-hint-a" id="op-ind-hint"></div>
         </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" id="op-ind-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" id="op-ind-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
     </div></div>
-    <button class="btn btn-p btn-full" style="min-height:52px;font-size:16px;margin-bottom:10px" onclick="openNew()">
+    <button class="btn btn-p btn-full" style="min-height:54px;font-size:16px;margin-bottom:10px" onclick="openNew()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       新增訂單
     </button>
@@ -225,20 +249,20 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     <div id="orders-all"><div class="empty">尚無訂單</div></div>
   </div>
 </div>
-
+<!-- ====== NEW ORDER ====== -->
 <div id="s-new" class="screen">
   <div class="topbar">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <button class="back-btn" onclick="goBack('s-shift')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>取消
+    <div class="topbar-row">
+      <button class="back-btn" onclick="navBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>上一頁
       </button>
-      <span class="ptitle" id="new-num"></span>
+      <span style="font-size:17px;font-weight:600" id="new-num"></span>
     </div>
   </div>
   <div class="content">
     <div id="new-op-bar" class="op-indicator op-ind-a" style="margin-bottom:10px">
       <div>
-        <div style="font-size:12px;margin-bottom:1px" id="new-op-role" style="opacity:.8"></div>
+        <div style="font-size:12px;margin-bottom:1px;color:#6e6e73" id="new-op-role"></div>
         <div class="op-ind-name op-ind-name-a" id="new-op-name"></div>
       </div>
       <span id="new-op-tag"></span>
@@ -260,20 +284,20 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     <div id="new-footer" class="card" style="border:none"><div class="ci">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <span style="font-size:14px;color:#6e6e73">訂單金額</span>
-        <span id="new-total" style="font-size:30px;font-weight:500;color:#534AB7">NT$0</span>
+        <span id="new-total" style="font-size:30px;font-weight:700;color:var(--purple)">NT$0</span>
       </div>
       <button id="submit-btn" class="btn btn-g btn-full btn-lg" onclick="submitOrder()">送出並前往收款</button>
     </div></div>
   </div>
 </div>
-
+<!-- ====== PAYMENT ====== -->
 <div id="s-pay" class="screen">
   <div class="topbar">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <button class="back-btn" onclick="goBack('s-shift')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>返回
+    <div class="topbar-row">
+      <button class="back-btn" onclick="navBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>上一頁
       </button>
-      <span class="ptitle" id="pay-num"></span>
+      <span style="font-size:17px;font-weight:600" id="pay-num"></span>
     </div>
   </div>
   <div class="content">
@@ -283,11 +307,11 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
       <div class="divider"></div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:14px;font-weight:500">應收</span>
-        <span id="pay-exp" style="font-size:26px;font-weight:500;color:#185FA5">NT$0</span>
+        <span id="pay-exp" style="font-size:28px;font-weight:700;color:var(--blue)">NT$0</span>
       </div>
     </div></div>
     <div class="card"><div class="ci">
-      <label style="margin-bottom:8px">顧客付款</label>
+      <label style="margin-bottom:8px;font-size:14px">顧客付款金額</label>
       <input class="cash-input" id="pay-rcv" type="number" inputmode="numeric" placeholder="0" oninput="calcChg()">
       <div class="g4" style="margin-top:10px">
         <button class="btn btn-o btn-sm" onclick="setRcv(100)">$100</button>
@@ -296,30 +320,30 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
         <button class="btn btn-o btn-sm" onclick="setRcv(1000)">$1000</button>
       </div>
     </div></div>
-    <div class="card"><div class="ci" style="text-align:center;padding:8px 14px">
-      <div style="font-size:13px;color:#6e6e73;margin-bottom:2px">找零</div>
+    <div class="card"><div class="ci" style="padding:10px 14px">
+      <div class="pay-sub-lbl">找零</div>
       <div class="change-big" id="pay-chg" style="color:#aeaeb2">—</div>
       <button class="btn btn-g btn-full btn-lg" onclick="confirmPay()" style="margin-top:4px">確認收款完成</button>
     </div></div>
   </div>
 </div>
+</div>
+<!-- #app -->
 
 <script>
-/* ===== 設定區 ===== */
-const MEMBERS=['許紘睿','陳怡岑','李懿珊','林靜玟','陳竫媗','顏紹耘','陳昱亘','陶玉慧','陳耀豐','張群佑','張翊閎','藍于驊','方鈺瑜','簡宇彥','林祺臻'];
-const PRODUCTS=[
-  {n:'泡泡水',p:20},{n:'打火機',p:50},{n:'資料夾',p:40},
-  {n:'貼紙',p:5},{n:'吊飾',p:30},{n:'徽章',p:30},{n:'卡套(出清)',p:20}
-];
+/* ===== 設定 ===== */
+let MEMBERS=['許紘睿','陳怡岑','李懿珊','林靜玟','陳竫媗','顏紹耘','陳昱亘','陶玉慧','陳耀豐','張群佑','張翊閎','藍于驊','方鈺瑜','簡宇彥','林祺臻'];
+const PRODUCTS=[{n:'泡泡水',p:20},{n:'打火機',p:50},{n:'資料夾',p:40},{n:'貼紙',p:5},{n:'吊飾',p:30},{n:'徽章',p:30},{n:'卡套(出清)',p:20}];
 const DAYS=['5/11','5/12','5/13','5/14','5/15'];
 const SHEET_ID='12AbQUXDtkU6mFiOSIgOSJj1CCUw5Ir4hAaZC_uyf-6k';
-let GAS_URL='https://script.google.com/macros/s/AKfycbw9LAt15kMsSDuNZe2D9cOgRWPKjJrSAkHV7ruCGCowp-QxPRM9SvZzOmL4OQskxCi5/exec'; /* https://script.google.com/macros/s/AKfycbw9LAt15kMsSDuNZe2D9cOgRWPKjJrSAkHV7ruCGCowp-QxPRM9SvZzOmL4OQskxCi5/exec */
-/* ===== 設定區結束 ===== */
+let GAS_URL='https://script.google.com/macros/s/AKfycbw9LAt15kMsSDuNZe2D9cOgRWPKjJrSAkHV7ruCGCowp-QxPRM9SvZzOmL4OQskxCi5/exec'; 
+/* ===== 設定結束 ===== */
 
 let selDay='',selShift='',selCode='';
-let shift=null,orders=[],cnt=1,curOp='a';
+let shift=null,orders=[],cnt=1,curOp='a',isTest=false;
 let newItems={},newExtras=[],payId=null,allShifts=[];
-
+// 頁面歷史堆疊（用於上一頁）
+let navStack=[];
 const nt=n=>'NT$'+Math.round(n).toLocaleString();
 const ts=()=>new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
 const onum=o=>'#'+String(o.id).padStart(3,'0');
@@ -328,59 +352,126 @@ const opTag=pos=>pos==='a'
   ?`<span class="op-a">${shift.staffA}</span>`
   :`<span class="op-b">${shift.staffB}</span>`;
 
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
-function goBack(id){show(id);if(id==='s-shift')renderShift()}
+/* ---- Navigation ---- */
+function show(id,push=true){
+  const prev=document.querySelector('.screen.active');
+  if(push&&prev)navStack.push(prev.id);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  history.pushState({screen:id},'',location.pathname);
+}
+function navBack(){
+  if(navStack.length===0){show('s-setup',false);navStack=[];return}
+  const prev=navStack.pop();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(prev).classList.add('active');
+  window.scrollTo(0,0);
+  history.pushState({screen:prev},'',location.pathname);
+  if(prev==='s-shift')renderShift();
+}
+window.addEventListener('popstate',function(e){
+  if(navStack.length>0){
+    navBack();
+  } else {
+    const cur=document.querySelector('.screen.active');
+    if(cur&&cur.id==='s-setup'){
+      if(confirm('確定要離開系統？')){history.back()}
+      else{history.pushState({},'',location.pathname)}
+    } else {
+      navBack();
+    }
+  }
+});
+history.replaceState({screen:'s-setup'},'',location.pathname);
 
-function init(){
-  const db=document.getElementById('day-btns');
-  DAYS.forEach(d=>{const b=document.createElement('button');b.className='day-btn';b.textContent=d;b.onclick=()=>{document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selDay=d};db.appendChild(b)});
+/* ---- Members ---- */
+function saveMem(){try{localStorage.setItem('lw_members',JSON.stringify(MEMBERS))}catch(e){}}
+function loadMem(){try{const d=localStorage.getItem('lw_members');if(d){MEMBERS=JSON.parse(d)}}catch(e){}}
+function renderMemberList(){
+  document.getElementById('member-list').innerHTML=MEMBERS.map((m,i)=>`
+    <span class="member-chip">${m}
+      <button class="del-member" onclick="delMember(${i})" title="移除">×</button>
+    </span>`).join('');
   const opts=MEMBERS.map(m=>`<option>${m}</option>`).join('');
   document.getElementById('sel-a').innerHTML=opts;
   document.getElementById('sel-b').innerHTML=opts;
-  document.getElementById('sel-b').selectedIndex=1;
+  if(MEMBERS.length>1)document.getElementById('sel-b').selectedIndex=1;
+}
+function addMember(){
+  const inp=document.getElementById('new-member-input');
+  const name=inp.value.trim();
+  if(!name){alert('請輸入姓名');return}
+  if(MEMBERS.includes(name)){alert('此人員已在名單中');return}
+  MEMBERS.push(name);saveMem();
+  inp.value='';renderMemberList();
+}
+function delMember(i){
+  if(!confirm(`確定移除「${MEMBERS[i]}」？`))return;
+  MEMBERS.splice(i,1);saveMem();renderMemberList();
+}
+
+/* ---- Init ---- */
+function init(){
+  loadMem();
+  const db=document.getElementById('day-btns');
+  DAYS.forEach(d=>{
+    const b=document.createElement('button');b.className='day-btn';b.textContent=d;
+    b.onclick=()=>{document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selDay=d};
+    db.appendChild(b);
+  });
+  renderMemberList();
   loadShifts();
+  document.getElementById('new-member-input').addEventListener('keydown',e=>{if(e.key==='Enter')addMember()});
 }
 
+/* ---- Shift setup ---- */
 function pickShift(el,name,code){
-  document.querySelectorAll('.shift-btn').forEach(b=>b.className='shift-btn');
-  el.className=`shift-btn sel-${code}`;selShift=name;selCode=code;
+  document.querySelectorAll('.shift-btn').forEach(b=>{b.className='shift-btn';});
+  el.className=`shift-btn sel-${code}`;
+  selShift=name;selCode=code;
 }
-
-function startShift(){
+function startShift(test=false){
   if(!selDay){alert('請選擇日期');return}
   if(!selShift){alert('請選擇時段');return}
   const a=document.getElementById('sel-a').value,b=document.getElementById('sel-b').value;
   if(a===b){alert('A 位與 B 位不能是同一人');return}
-  shift={day:selDay,shift:selShift,code:selCode,staffA:a,staffB:b,startAt:ts()};
+  isTest=test;
+  shift={day:selDay,shift:selShift,code:selCode,staffA:a,staffB:b,startAt:ts(),isTest:test};
   orders=[];cnt=1;curOp='a';
   document.getElementById('shift-badge').textContent=`${shift.day} ${shift.shift}`;
   document.getElementById('shift-badge').className=`badge b${shift.code}`;
-  document.getElementById('shift-staff').textContent=`${a}・${b}`;
+  document.getElementById('shift-staff').textContent=`${a}・${b}${test?' 🧪 測試':''}`;
+  document.getElementById('test-banner-shift').style.display=test?'flex':'none';
   document.getElementById('op-btn-a').textContent=a+' (A)';
   document.getElementById('op-btn-b').textContent=b+' (B)';
-  updateOpUI();updateM();renderShift();show('s-shift');
+  updateOpUI();updateM();renderShift();
+  navStack=[];show('s-shift',false);
+}
+function startTestShift(){
+  if(!selDay){const first=document.querySelector('.day-btn');if(first){first.click()}}
+  if(!selShift){document.getElementById('sb-m').click();}
+  startShift(true);
 }
 
+/* ---- Operator UI ---- */
 function switchOp(pos){curOp=pos;updateOpUI()}
-
 function updateOpUI(){
   document.getElementById('op-btn-a').className='op-btn'+(curOp==='a'?' sel-a':'');
   document.getElementById('op-btn-b').className='op-btn'+(curOp==='b'?' sel-b':'');
-  const ind=document.getElementById('op-indicator');
-  const nm=document.getElementById('op-ind-name');
-  const ht=document.getElementById('op-ind-hint');
-  const ic=document.getElementById('op-ind-icon');
+  const ind=document.getElementById('op-indicator'),nm=document.getElementById('op-ind-name'),ht=document.getElementById('op-ind-hint'),ic=document.getElementById('op-ind-icon');
   if(curOp==='a'){
     ind.className='op-indicator op-ind-a';nm.className='op-ind-name op-ind-name-a';
     nm.textContent=shift.staffA+' (A 位)';ht.className='op-ind-hint op-ind-hint-a';
-    ht.textContent='此人建立的訂單將標記為 A';ic.setAttribute('stroke','#185FA5');
+    ht.textContent='此人建立的訂單將標記為 A';ic.setAttribute('stroke','var(--blue)');
   } else {
     ind.className='op-indicator op-ind-b';nm.className='op-ind-name op-ind-name-b';
     nm.textContent=shift.staffB+' (B 位)';ht.className='op-ind-hint op-ind-hint-b';
-    ht.textContent='此人建立的訂單將標記為 B';ic.setAttribute('stroke','#D85A30');
+    ht.textContent='此人建立的訂單將標記為 B';ic.setAttribute('stroke','var(--coral)');
   }
 }
 
+/* ---- Metrics ---- */
 function updateM(){
   const paid=orders.filter(o=>o.status==='paid'),pend=orders.filter(o=>o.status==='pending');
   document.getElementById('m-tot').textContent=orders.length;
@@ -389,6 +480,7 @@ function updateM(){
   document.getElementById('m-rev').textContent=nt(paid.reduce((s,o)=>s+o.total,0));
 }
 
+/* ---- Render orders ---- */
 function renderShift(){
   const pend=orders.filter(o=>o.status==='pending');
   document.getElementById('pending-section').style.display=pend.length?'block':'none';
@@ -396,10 +488,10 @@ function renderShift(){
   const all=orders.slice().reverse();
   document.getElementById('orders-all').innerHTML=all.length?all.map(o=>ocard(o,false)).join(''):'<div class="empty">尚無訂單</div>';
 }
-
 function ocard(o,showPay){
   const rows=o.items.map(i=>`<div class="oi"><span>${i.n}</span><span class="oi-qty">×${i.q}</span><span class="oi-sub">${nt(i.p*i.q)}</span></div>`).join('');
   const st=o.status==='paid'?'<span class="tag tag-paid">已收款</span>':o.status==='void'?'<span class="tag tag-void">作廢</span>':'<span class="tag tag-pend">待收款</span>';
+  const testT=o.isTest?'<span class="tag tag-test">測試</span>':'';
   const opT=o.op?opTag(o.op):'';
   const payBtn=showPay&&o.status==='pending'?`<button class="btn btn-g btn-xs" onclick="event.stopPropagation();openPay(${o.id})" style="flex-shrink:0">收款</button>`:'';
   const voidBtn=!showPay&&o.status==='pending'?`<button class="btn btn-d btn-xs" onclick="event.stopPropagation();voidOrder(${o.id})" style="flex-shrink:0">作廢</button>`:'';
@@ -407,24 +499,23 @@ function ocard(o,showPay){
   return`<div class="order-card">
     <div class="order-hd" onclick="tog(this)">
       <span class="onum">${onum(o)}</span>
-      <div class="osum"><div class="oamt">${nt(o.total)} ${opT}</div><div class="oprev">${o.items.map(i=>i.n+'×'+i.q).join('、')}</div></div>
-      ${st}${payBtn}${voidBtn}
+      <div class="osum"><div class="oamt">${nt(o.total)} ${opT} ${testT}</div><div class="oprev">${o.items.map(i=>i.n+'×'+i.q).join('、')}</div></div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">${st}${payBtn}${voidBtn}</div>
     </div>
     <div class="order-body">
       <div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opT}<span style="font-size:12px;color:#aeaeb2;margin-left:4px">${o.at}</span></div>
-      ${rows}<div class="ototal"><span>合計</span><span style="color:#0F6E56">${nt(o.total)}</span></div>
+      ${rows}<div class="ototal"><span>合計</span><span style="color:var(--green)">${nt(o.total)}</span></div>
     </div>${done}
   </div>`;
 }
-
 function tog(el){el.nextElementSibling.classList.toggle('open')}
-
 function voidOrder(id){
   if(!confirm('確定作廢？'))return;
   const o=orders.find(x=>x.id===id);if(o)o.status='void';
   updateM();renderShift();
 }
 
+/* ---- New order ---- */
 function openNew(){
   newItems={};PRODUCTS.forEach(p=>{newItems[p.n]=0});newExtras=[];
   document.getElementById('new-num').textContent=`訂單 ${onum({id:cnt})}`;
@@ -436,11 +527,11 @@ function openNew(){
   nm.textContent=opName(curOp);
   document.getElementById('new-op-tag').innerHTML=opTag(curOp);
   const footer=document.getElementById('new-footer');
-  if(curOp==='a'){footer.style.background='#EEEDFE';footer.style.borderColor='#AFA9EC';document.getElementById('new-total').style.color='#534AB7';document.getElementById('submit-btn').style.background='#0F6E56'}
-  else{footer.style.background='#FAECE7';footer.style.borderColor='#F0997B';document.getElementById('new-total').style.color='#993C1D';document.getElementById('submit-btn').style.background='#993C1D'}
+  const sb=document.getElementById('submit-btn');
+  if(curOp==='a'){footer.style.background='#EEEDFE';footer.style.borderColor='#AFA9EC';document.getElementById('new-total').style.color='var(--purple)';sb.style.background='var(--green)'}
+  else{footer.style.background=`var(--coral-l)`;footer.style.borderColor='#F0997B';document.getElementById('new-total').style.color='var(--coral)';sb.style.background='var(--coral)'}
   renderProds();show('s-new');
 }
-
 function renderProds(){
   document.getElementById('prod-list').innerHTML=PRODUCTS.map(p=>`
     <div class="prod-row">
@@ -453,20 +544,17 @@ function renderProds(){
     </div>`).join('');
   renderExtras();updTotal();
 }
-
 function chg(name,d){
   newItems[name]=Math.max(0,(newItems[name]||0)+d);
   const el=document.getElementById('q'+name);if(el)el.textContent=newItems[name];
   updTotal();
 }
-
 function renderExtras(){
   const el=document.getElementById('extra-list');
   el.innerHTML=newExtras.length?'<div style="margin-top:10px">'+newExtras.map((e,i)=>`
     <div class="prod-row"><div style="flex:1"><div class="pname">${e.n} <span class="ctag">自訂</span></div><div class="pprice">${nt(e.p)} × ${e.q} = ${nt(e.p*e.q)}</div></div>
     <button class="btn btn-d btn-xs" onclick="rmEx(${i})">移除</button></div>`).join('')+'</div>':'';
 }
-
 function addExtra(){
   const n=document.getElementById('ex-n').value.trim(),p=parseFloat(document.getElementById('ex-p').value)||0,q=parseInt(document.getElementById('ex-q').value)||1;
   if(!n||!p){alert('請填寫名稱與售價');return}
@@ -474,22 +562,24 @@ function addExtra(){
   document.getElementById('ex-n').value='';document.getElementById('ex-p').value='';document.getElementById('ex-q').value='1';
   renderExtras();updTotal();
 }
-
 function rmEx(i){newExtras.splice(i,1);renderExtras();updTotal()}
 function getTotal(){let s=0;PRODUCTS.forEach(p=>{s+=p.p*(newItems[p.n]||0)});newExtras.forEach(e=>{s+=e.p*e.q});return s}
 function updTotal(){document.getElementById('new-total').textContent=nt(getTotal())}
-
 function submitOrder(){
   const items=[];
   PRODUCTS.forEach(p=>{if((newItems[p.n]||0)>0)items.push({n:p.n,p:p.p,q:newItems[p.n]})});
   newExtras.forEach(e=>items.push({n:e.n,p:e.p,q:e.q}));
   if(!items.length){alert('請至少選擇一項商品');return}
-  const o={id:cnt++,items,total:getTotal(),status:'pending',op:curOp,operName:opName(curOp),at:ts(),paidAt:null,rcv:0,chg:0};
-  orders.push(o);updateM();payId=o.id;loadPay(o);show('s-pay');
+  const o={id:cnt++,items,total:getTotal(),status:'pending',op:curOp,operName:opName(curOp),at:ts(),paidAt:null,rcv:0,chg:0,isTest};
+  orders.push(o);updateM();
+  payId=o.id;loadPay(o);
+  navStack=navStack.filter(s=>s!=='s-new');
+  navStack.push('s-shift');
+  show('s-pay');
 }
 
+/* ---- Payment ---- */
 function openPay(id){const o=orders.find(x=>x.id===id);if(!o)return;payId=id;loadPay(o);show('s-pay')}
-
 function loadPay(o){
   document.getElementById('pay-num').textContent=`訂單 ${onum(o)}`;
   document.getElementById('pay-exp').textContent=nt(o.total);
@@ -500,37 +590,38 @@ function loadPay(o){
   document.getElementById('pay-chg').textContent='—';
   document.getElementById('pay-chg').style.color='#aeaeb2';
 }
-
 function calcChg(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
   const rcv=parseFloat(document.getElementById('pay-rcv').value)||0,chg=rcv-o.total;
   const el=document.getElementById('pay-chg');
   if(!rcv){el.textContent='—';el.style.color='#aeaeb2';return}
-  el.textContent=nt(chg);el.style.color=chg>=0?'#0F6E56':'#A32D2D';
+  el.textContent=nt(chg);el.style.color=chg>=0?'var(--green)':'var(--red)';
 }
-
 function setRcv(n){document.getElementById('pay-rcv').value=n;calcChg()}
-
 function confirmPay(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
   const rcv=parseFloat(document.getElementById('pay-rcv').value)||0;
   if(!rcv){alert('請輸入實收金額');return}
   if(rcv<o.total&&!confirm(`實收 ${nt(rcv)} 少於應收 ${nt(o.total)}，確定？`))return;
   o.status='paid';o.rcv=rcv;o.chg=rcv-o.total;o.paidAt=ts();
-  updateM();renderShift();show('s-shift');
+  updateM();renderShift();
+  navStack=navStack.filter(s=>s!=='s-pay');
+  show('s-shift',false);
 }
 
+/* ---- End shift ---- */
 function endShift(){
   const pend=orders.filter(o=>o.status==='pending');
-  if(!confirm(`確定結束 ${shift.day} ${shift.shift}？\n共 ${orders.length} 筆訂單。${pend.length?'\n還有 '+pend.length+' 筆待收款！':''}`))return;
+  if(!confirm(`確定結束 ${shift.day} ${shift.shift}？\n共 ${orders.length} 筆訂單。${pend.length?'\n⚠️ 還有 '+pend.length+' 筆待收款！':''}`))return;
   const rev=orders.filter(o=>o.status==='paid').reduce((s,o)=>s+o.total,0);
-  allShifts.push({...shift,orders:JSON.parse(JSON.stringify(orders)),orderCount:orders.length,paidCount:orders.filter(o=>o.status==='paid').length,revenue:rev,endAt:ts(),exported:false});
-  saveShifts();renderHist();shift=null;orders=[];show('s-setup');
+  allShifts.push({...shift,orders:JSON.parse(JSON.stringify(orders)),orderCount:orders.length,paidCount:orders.filter(o=>o.status==='paid').length,revenue:rev,endAt:ts(),exported:false,isTest});
+  saveShifts();renderHist();shift=null;orders=[];
+  navStack=[];show('s-setup',false);
 }
 
+/* ---- Persist ---- */
 function saveShifts(){try{localStorage.setItem('lw5_shifts',JSON.stringify(allShifts))}catch(e){}}
 function loadShifts(){try{const d=localStorage.getItem('lw5_shifts');if(d)allShifts=JSON.parse(d)}catch(e){allShifts=[]}renderHist()}
-
 function renderHist(){
   const w=document.getElementById('hist-wrap');
   if(!allShifts.length){w.style.display='none';return}
@@ -538,34 +629,40 @@ function renderHist(){
   document.getElementById('hist-list').innerHTML=allShifts.map((s,i)=>`
     <div class="hist-row">
       <div class="hist-info">
-        <div class="hist-name"><span class="badge b${s.code}" style="font-size:12px">${s.day} ${s.shift}</span><span style="font-size:12px;color:${s.exported?'#0F6E56':'#854F0B'}">${s.exported?'已匯出':'待匯出'}</span></div>
-        <div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:#0F6E56">${nt(s.revenue)}</strong></div>
+        <div class="hist-name">
+          <span class="badge b${s.code}" style="font-size:12px">${s.day} ${s.shift}</span>
+          ${s.isTest?'<span class="tag tag-test">測試</span>':''}
+          <span style="font-size:12px;color:${s.exported?'var(--green)':'var(--amber)'}">${s.exported?'已匯出':'待匯出'}</span>
+        </div>
+        <div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:var(--green)">${nt(s.revenue)}</strong></div>
       </div>
       <button class="btn btn-d btn-xs" onclick="delShift(${i})">刪除</button>
     </div>`).join('');
 }
 
-function delShift(i){if(!confirm('確定刪除？'))return;allShifts.splice(i,1);saveShifts();renderHist()}
-
+/* ---- Export ---- */
 function exportAll(){
   const pend=allShifts.filter(s=>!s.exported);
   if(!pend.length){alert('沒有待匯出的班次');return}
-  const headers=['日期','班次','A位','B位','訂單數','已收款數','班次營收(NT$)','訂單明細','開班','結班'];
-  const rows=pend.map(s=>[s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
+  const headers=['日期','班次','A位','B位','訂單數','已收款數','班次營收(NT$)','訂單明細','開班','結班','備註'];
+  const rows=pend.map(s=>[
+    s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
     s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),
-    s.startAt,s.endAt]);
+    s.startAt,s.endAt,
+    s.isTest?'【測試資料】':''
+  ]);
   const msgEl=document.getElementById('exp-msg');
   if(GAS_URL){
     fetch(GAS_URL,{method:'POST',body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})})
-      .then(r=>r.json()).then(()=>{pend.forEach(s=>s.exported=true);saveShifts();renderHist();msgEl.className='notice n-ok';msgEl.textContent=`成功匯出 ${pend.length} 個班次至 Google Sheet`;})
+      .then(r=>r.json())
+      .then(()=>{pend.forEach(s=>s.exported=true);saveShifts();renderHist();msgEl.className='notice n-ok';msgEl.textContent=`✓ 成功匯出 ${pend.length} 個班次至 Google Sheet`;})
       .catch(()=>{msgEl.className='notice n-err';msgEl.textContent='連線失敗，請確認 Apps Script URL'});
   } else {
     pend.forEach(s=>s.exported=true);saveShifts();renderHist();
-    msgEl.className='notice n-ok';
-    msgEl.innerHTML=`<strong>${pend.length} 個班次已準備就緒</strong><br>請在 HTML 中填入 GAS_URL 即可自動寫入 Google Sheet。`;
+    msgEl.className='notice n-warn';
+    msgEl.innerHTML=`<strong>${pend.length} 個班次已準備就緒</strong><br>請在 HTML 中填入 GAS_URL 後即可自動寫入 Google Sheet。`;
   }
 }
-
 init();
 </script>
 </body>
