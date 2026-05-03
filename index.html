@@ -60,6 +60,7 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
 .back-btn{display:flex;align-items:center;gap:4px;font-size:15px;color:#6e6e73;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;touch-action:manipulation;min-height:36px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .day-btn{height:50px;border:2px solid rgba(0,0,0,0.15);border-radius:var(--rs);background:#f5f5f7;font-size:14px;font-weight:600;cursor:pointer;color:#6e6e73;touch-action:manipulation;transition:all .15s}
 .day-btn.sel{background:var(--purple)!important;color:#fff!important;border-color:var(--purple)!important;font-weight:700}
@@ -329,12 +330,21 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     <div class="card"><div class="ci">
       <label style="margin-bottom:8px;font-size:14px">顧客付款金額</label>
       <input class="cash-input" id="pay-rcv" type="number" inputmode="numeric" placeholder="0" oninput="calcChg()">
-      <div class="g4" style="margin-top:10px">
-        <button class="btn btn-o btn-sm" onclick="setRcv(100)">$100</button>
-        <button class="btn btn-o btn-sm" onclick="setRcv(200)">$200</button>
-        <button class="btn btn-o btn-sm" onclick="setRcv(500)">$500</button>
-        <button class="btn btn-o btn-sm" onclick="setRcv(1000)">$1000</button>
+      
+      <!-- 更新：10 個快捷鍵，五等分排列 -->
+      <div class="g5" style="margin-top:10px">
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(50)">$50</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(100)">$100</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(150)">$150</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(200)">$200</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(250)">$250</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(300)">$300</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(350)">$350</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(400)">$400</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(450)">$450</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(500)">$500</button>
       </div>
+      
     </div></div>
     <div class="card"><div class="ci" style="padding:10px 14px">
       <div class="pay-sub-lbl">找零</div>
