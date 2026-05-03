@@ -27,7 +27,6 @@ body{min-height:100%;min-height:100dvh;background:#f5f5f7;color:#1a1a1a;font-fam
   .btn-o{color:#f2f2f7!important}
   .order-hd:active{background:#3a3a3c!important}
   .test-banner{background:#2a1f00!important;border-color:#EF9F27!important}
-  /* 修復人員名單在深色模式下白底白字的問題 */
   .member-chip{background:#3a3a3c!important;color:#f2f2f7!important;border-color:rgba(255,255,255,0.15)!important}
 }
 #app{width:100%;max-width:600px;margin:0 auto;min-height:100dvh;background:inherit;display:flex;flex-direction:column}
@@ -307,10 +306,12 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
       <div class="cl">訂單明細</div>
       <div id="pay-items"></div>
       <div class="divider"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <span style="font-size:14px;font-weight:500">應收</span>
         <span id="pay-exp" style="font-size:28px;font-weight:700;color:var(--blue)">NT$0</span>
       </div>
+      <!-- 新增：備註輸入框 -->
+      <input id="pay-memo" type="text" placeholder="新增訂單備註 (選填，例如: 顧客統編)" style="height:40px;font-size:14px;background:#f5f5f7;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--rs);width:100%;padding:0 10px;">
     </div></div>
     <div class="card"><div class="ci">
       <label style="margin-bottom:8px;font-size:14px">顧客付款金額</label>
@@ -344,7 +345,6 @@ let GAS_URL='https://script.google.com/macros/s/AKfycbw9LAt15kMsSDuNZe2D9cOgRWPK
 let selDay='',selShift='',selCode='';
 let shift=null,orders=[],cnt=1,curOp='a',isTest=false;
 let newItems={},newExtras=[],payId=null,allShifts=[];
-// 頁面歷史堆疊（用於上一頁）
 let navStack=[];
 const nt=n=>'NT$'+Math.round(n).toLocaleString();
 const ts=()=>new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
@@ -409,7 +409,7 @@ function addMember(){
   inp.value='';renderMemberList();
 }
 function delMember(i){
-  if(!confirm(`確定移除「${MEMBERS[i]}」？`))return;
+  if(!window.confirm(`確定移除「${MEMBERS[i]}」？`))return;
   MEMBERS.splice(i,1);saveMem();renderMemberList();
 }
 
@@ -498,6 +498,9 @@ function ocard(o,showPay){
   const payBtn=showPay&&o.status==='pending'?`<button class="btn btn-g btn-xs" onclick="event.stopPropagation();openPay(${o.id})" style="flex-shrink:0">收款</button>`:'';
   const voidBtn=!showPay&&o.status==='pending'?`<button class="btn btn-d btn-xs" onclick="event.stopPropagation();voidOrder(${o.id})" style="flex-shrink:0">作廢</button>`:'';
   const done=o.status==='paid'?`<div class="pay-done">實收 ${nt(o.rcv)}　找零 ${nt(o.chg)}　${o.paidAt}</div>`:'';
+  // 顯示備註如果有的話
+  const memoHtml = (o.memo && o.memo.trim() !== '') ? `<div style="font-size:12px;color:#854F0B;margin-top:6px;background:#FFFBEA;padding:4px 8px;border-radius:4px;">備註: ${o.memo}</div>` : '';
+  
   return`<div class="order-card">
     <div class="order-hd" onclick="tog(this)">
       <span class="onum">${onum(o)}</span>
@@ -507,12 +510,13 @@ function ocard(o,showPay){
     <div class="order-body">
       <div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opT}<span style="font-size:12px;color:#aeaeb2;margin-left:4px">${o.at}</span></div>
       ${rows}<div class="ototal"><span>合計</span><span style="color:var(--green)">${nt(o.total)}</span></div>
+      ${memoHtml}
     </div>${done}
   </div>`;
 }
 function tog(el){el.nextElementSibling.classList.toggle('open')}
 function voidOrder(id){
-  if(!confirm('確定作廢？'))return;
+  if(!window.confirm('確定作廢此筆訂單？'))return;
   const o=orders.find(x=>x.id===id);if(o)o.status='void';
   updateM();renderShift();
 }
@@ -572,7 +576,7 @@ function submitOrder(){
   PRODUCTS.forEach(p=>{if((newItems[p.n]||0)>0)items.push({n:p.n,p:p.p,q:newItems[p.n]})});
   newExtras.forEach(e=>items.push({n:e.n,p:e.p,q:e.q}));
   if(!items.length){alert('請至少選擇一項商品');return}
-  const o={id:cnt++,items,total:getTotal(),status:'pending',op:curOp,operName:opName(curOp),at:ts(),paidAt:null,rcv:0,chg:0,isTest};
+  const o={id:cnt++,items,total:getTotal(),status:'pending',op:curOp,operName:opName(curOp),at:ts(),paidAt:null,rcv:0,chg:0,isTest,memo:''};
   orders.push(o);updateM();
   payId=o.id;loadPay(o);
   navStack=navStack.filter(s=>s!=='s-new');
@@ -591,6 +595,7 @@ function loadPay(o){
   document.getElementById('pay-rcv').value='';
   document.getElementById('pay-chg').textContent='—';
   document.getElementById('pay-chg').style.color='#aeaeb2';
+  document.getElementById('pay-memo').value = o.memo || ''; // 清空或帶入原有的備註
 }
 function calcChg(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
@@ -604,8 +609,12 @@ function confirmPay(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
   const rcv=parseFloat(document.getElementById('pay-rcv').value)||0;
   if(!rcv){alert('請輸入實收金額');return}
-  if(rcv<o.total&&!confirm(`實收 ${nt(rcv)} 少於應收 ${nt(o.total)}，確定？`))return;
-  o.status='paid';o.rcv=rcv;o.chg=rcv-o.total;o.paidAt=ts();
+  if(rcv<o.total&&!window.confirm(`實收 ${nt(rcv)} 少於應收 ${nt(o.total)}，確定要繼續嗎？`))return;
+  o.status='paid';
+  o.rcv=rcv;
+  o.chg=rcv-o.total;
+  o.paidAt=ts();
+  o.memo=document.getElementById('pay-memo').value.trim(); // 存入備註
   updateM();renderShift();
   navStack=navStack.filter(s=>s!=='s-pay');
   show('s-shift',false);
@@ -614,7 +623,7 @@ function confirmPay(){
 /* ---- End shift ---- */
 function endShift(){
   const pend=orders.filter(o=>o.status==='pending');
-  if(!confirm(`確定結束 ${shift.day} ${shift.shift}？\n共 ${orders.length} 筆訂單。${pend.length?'\n⚠️ 還有 '+pend.length+' 筆待收款！':''}`))return;
+  if(!window.confirm(`確定結束 ${shift.day} ${shift.shift}？\n共 ${orders.length} 筆訂單。${pend.length?'\n⚠️ 還有 '+pend.length+' 筆待收款！':''}`))return;
   const rev=orders.filter(o=>o.status==='paid').reduce((s,o)=>s+o.total,0);
   allShifts.push({...shift,orders:JSON.parse(JSON.stringify(orders)),orderCount:orders.length,paidCount:orders.filter(o=>o.status==='paid').length,revenue:rev,endAt:ts(),exported:false,isTest});
   saveShifts();renderHist();shift=null;orders=[];
@@ -624,6 +633,16 @@ function endShift(){
 /* ---- Persist ---- */
 function saveShifts(){try{localStorage.setItem('lw5_shifts',JSON.stringify(allShifts))}catch(e){}}
 function loadShifts(){try{const d=localStorage.getItem('lw5_shifts');if(d)allShifts=JSON.parse(d)}catch(e){allShifts=[]}renderHist()}
+
+/* ---- 修復刪除歷史按鈕 ---- */
+function delShift(i){
+  // 強制使用 window.confirm，避免手機版被阻擋
+  if(!window.confirm('確定要刪除這筆班次紀錄嗎？這將無法復原。')) return;
+  allShifts.splice(i, 1);
+  saveShifts();
+  renderHist();
+}
+
 function renderHist(){
   const w=document.getElementById('hist-wrap');
   if(!allShifts.length){w.style.display='none';return}
@@ -638,7 +657,8 @@ function renderHist(){
         </div>
         <div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:var(--green)">${nt(s.revenue)}</strong></div>
       </div>
-      <button class="btn btn-d btn-xs" onclick="delShift(${i})">刪除</button>
+      <!-- 修正點擊事件冒泡 -->
+      <button class="btn btn-d btn-sm" onclick="event.stopPropagation(); delShift(${i})">刪除</button>
     </div>`).join('');
 }
 
@@ -647,17 +667,32 @@ function exportAll(){
   const pend=allShifts.filter(s=>!s.exported);
   if(!pend.length){alert('沒有待匯出的班次');return}
   const headers=['日期','班次','A位','B位','訂單數','已收款數','班次營收(NT$)','訂單明細','開班','結班','備註'];
-  const rows=pend.map(s=>[
-    s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
-    s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),
-    s.startAt,s.endAt,
-    s.isTest?'【測試資料】':''
-  ]);
+  
+  const rows=pend.map(s=> {
+    // 收集該班次底下的備註與測試標籤
+    let memoParts = [];
+    if (s.isTest) memoParts.push('【測試資料】');
+    
+    // 抓出有備註的訂單，並標上訂單編號
+    let orderMemos = s.orders
+      .filter(o => o.memo && o.memo.trim() !== '')
+      .map(o => `${onum(o)}備註: ${o.memo.trim()}`);
+    
+    if (orderMemos.length > 0) memoParts.push(orderMemos.join(' | '));
+
+    return [
+      s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
+      s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),
+      s.startAt,s.endAt,
+      memoParts.join(' | ') // 把測試標籤跟各個訂單備註放進 K 欄
+    ];
+  });
+
   const msgEl=document.getElementById('exp-msg');
   if(GAS_URL){
     fetch(GAS_URL,{
       method:'POST',
-      redirect: 'follow', // 加強跨網域重新導向的支援
+      redirect: 'follow', 
       body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})
     })
       .then(r=>r.json())
