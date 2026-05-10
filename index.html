@@ -205,4 +205,444 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
       <div class="card" style="border: 1.5px solid #EF9F27;"><div class="ci">
         <div class="cl" style="color: #854F0B;">[隱藏管理] 常駐商品 / 優惠方案</div>
         <div class="member-list" id="prod-setup-list" style="margin-bottom:12px"></div>
-        <div style="display
+        <div style="display:flex;gap:8px">
+          <input id="new-prod-name" placeholder="商品/方案名稱" style="flex:2;height:40px;font-size:14px">
+          <input id="new-prod-price" type="number" inputmode="numeric" placeholder="售價" style="flex:1;height:40px;font-size:14px">
+          <button class="btn btn-p btn-sm" onclick="addSetupProd()" style="flex-shrink:0">新增</button>
+        </div>
+      </div></div>
+    </div>
+
+    <button class="btn btn-p btn-full btn-lg" onclick="startShift()" style="margin-top: 10px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      開始班次
+    </button>
+    
+    <div id="hist-wrap" style="display:none;margin-top:16px">
+      <div class="sec-lbl">歷史班次</div>
+      <div class="card"><div class="ci"><div id="hist-list"></div></div></div>
+      <button class="gs-btn" onclick="exportAll()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        匯出全部至 Google Sheet
+      </button>
+      <div id="exp-msg" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+<div id="s-shift" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <span id="shift-badge" class="badge"></span>
+        <span id="shift-staff" style="font-size:12px;color:#6e6e73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+      </div>
+      <button class="btn btn-d btn-sm" onclick="endShift()" style="flex-shrink:0;margin-left:8px">結班</button>
+    </div>
+  </div>
+  <div class="content">
+    <div id="test-banner-shift" class="test-banner" style="display:none">
+      <span>🧪</span><span>測試模式 — 資料匯出時將標記為「測試」</span>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="m-lbl">訂單數</div><div class="m-val" style="color:var(--blue)" id="m-tot">0</div></div>
+      <div class="metric"><div class="m-lbl">班次營收</div><div class="m-val" style="color:var(--green)" id="m-rev">$0</div></div>
+      <div class="metric"><div class="m-lbl">待收款</div><div class="m-val" style="color:var(--amber)" id="m-pend">0</div></div>
+      <div class="metric"><div class="m-lbl">已收款</div><div class="m-val" style="color:var(--green)" id="m-paid">0</div></div>
+    </div>
+    <div class="card"><div class="ci" style="padding:10px 14px">
+      <div class="cl" style="margin-bottom:8px">現在是誰在操作？</div>
+      <div class="op-selector">
+        <button class="op-btn" id="op-btn-a" onclick="switchOp('a')"></button>
+        <button class="op-btn" id="op-btn-b" onclick="switchOp('b')"></button>
+      </div>
+      <div id="op-indicator" class="op-indicator op-ind-a">
+        <div>
+          <div class="op-ind-name op-ind-name-a" id="op-ind-name"></div>
+          <div class="op-ind-hint op-ind-hint-a" id="op-ind-hint"></div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" id="op-ind-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div></div>
+    <button class="btn btn-p btn-full" style="min-height:54px;font-size:16px;margin-bottom:10px" onclick="openNew()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新增訂單
+    </button>
+    <div id="pending-section" style="display:none">
+      <div class="sec-lbl">待收款</div>
+      <div id="orders-pend"></div>
+    </div>
+    <div class="sec-lbl">所有訂單</div>
+    <div id="orders-all"><div class="empty">尚無訂單</div></div>
+  </div>
+</div>
+<div id="s-new" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="back-btn" onclick="navBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>上一頁
+      </button>
+      <span style="font-size:17px;font-weight:600" id="new-num"></span>
+    </div>
+  </div>
+  <div class="content">
+    <div id="new-op-bar" class="op-indicator op-ind-a" style="margin-bottom:10px">
+      <div>
+        <div style="font-size:12px;margin-bottom:1px;color:#6e6e73" id="new-op-role"></div>
+        <div class="op-ind-name op-ind-name-a" id="new-op-name"></div>
+      </div>
+      <span id="new-op-tag"></span>
+    </div>
+    <div class="card"><div class="ci">
+      <div class="cl">商品</div>
+      <div id="prod-list"></div>
+    </div></div>
+    <div class="card"><div class="ci">
+      <div class="cl">自訂品項</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
+        <div><label>名稱</label><input id="ex-n" placeholder="品項名稱" style="height:42px;font-size:14px"></div>
+        <div><label>售價</label><input id="ex-p" type="number" inputmode="numeric" placeholder="0" style="height:42px;font-size:14px"></div>
+        <div><label>數量</label><input id="ex-q" type="number" inputmode="numeric" value="1" min="1" style="height:42px;font-size:14px"></div>
+      </div>
+      <button class="btn btn-o btn-full btn-sm" onclick="addExtra()">加入自訂品項</button>
+      <div id="extra-list"></div>
+    </div></div>
+    <div id="new-footer" class="card" style="border:none"><div class="ci">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:14px;color:#6e6e73">訂單金額</span>
+        <span id="new-total" style="font-size:30px;font-weight:700;color:var(--purple)">NT$0</span>
+      </div>
+      <button id="submit-btn" class="btn btn-g btn-full btn-lg" onclick="submitOrder()">送出並前往收款</button>
+    </div></div>
+  </div>
+</div>
+<div id="s-pay" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="back-btn" onclick="navBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>上一頁
+      </button>
+      <span style="font-size:17px;font-weight:600" id="pay-num"></span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card"><div class="ci">
+      <div class="cl">訂單明細</div>
+      <div id="pay-items"></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-size:14px;font-weight:500">應收</span>
+        <span id="pay-exp" style="font-size:28px;font-weight:700;color:var(--blue)">NT$0</span>
+      </div>
+      <input id="pay-memo" type="text" placeholder="新增訂單備註 (選填，例如: 顧客統編)" style="height:40px;font-size:14px;background:#f5f5f7;border:0.5px solid rgba(0,0,0,0.1);border-radius:var(--rs);width:100%;padding:0 10px;">
+    </div></div>
+    <div class="card"><div class="ci">
+      <label style="margin-bottom:8px;font-size:14px">顧客付款金額</label>
+      <input class="cash-input" id="pay-rcv" type="number" inputmode="numeric" placeholder="0" oninput="calcChg()">
+      
+      <div class="g5" style="margin-top:10px">
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(50)">$50</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(100)">$100</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(150)">$150</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(200)">$200</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(250)">$250</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(300)">$300</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(350)">$350</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(400)">$400</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(450)">$450</button>
+        <button class="btn btn-o btn-sm" style="padding:0" onclick="setRcv(500)">$500</button>
+      </div>
+    </div></div>
+    <div class="card"><div class="ci" style="padding:10px 14px">
+      <div class="pay-sub-lbl">找零</div>
+      <div class="change-big" id="pay-chg" style="color:#aeaeb2">—</div>
+      <button class="btn btn-g btn-full btn-lg" onclick="confirmPay()" style="margin-top:4px">確認收款完成</button>
+    </div></div>
+  </div>
+</div>
+</div>
+<script>
+/* ===== 設定 (正式鎖定版) ===== */
+let MEMBERS_CORE=['許紘睿(總召)','陳怡岑(副召)','林靜玟','陳竫媗','陳昱亘','陳耀豐','張群佑','張翊閎','李懿珊','方鈺瑜','顏紹耘','陶玉慧','簡宇彥','藍于驊','林祺臻'];
+let MEMBERS_RESERVE=['賴杏恩','吳宥陞','羅允威','陳采靖','吳安琪','韓洛君','鄭天愛','楊旻姍','楊逸宇','陳稚昇','王立綺','林聖倫','雲馨葳','丁郁婷','張祐容','江俊諺','郭家妤','林沁妤','柯湘涵'];
+
+let PRODUCTS=[
+  {n:'泡泡水',p:20},
+  {n:'打火機',p:50},
+  {n:'資料夾',p:40},
+  {n:'貼紙',p:5},
+  {n:'吊飾',p:30},
+  {n:'徽章',p:30},
+  {n:'卡套(絕版品出清)',p:20},
+  {n:'(促銷)資料夾全科三件套',p:100},
+  {n:'(促銷)貼紙任選五張',p:20},
+  {n:'(促銷)All in 啦 All in',p:250},
+  {n:'(促銷)吊飾徽章組',p:50},
+  {n:'(促銷)滿百加十元贈卡套',p:10}
+];
+
+const DAYS=['5/11','5/12','5/13','5/14','5/15'];
+const SHEET_ID='12AbQUXDtkU6mFiOSIgOSJj1CCUw5Ir4hAaZC_uyf-6k';
+let GAS_URL='https://script.google.com/macros/s/AKfycbw9LAt15kMsSDuNZe2D9cOgRWPKjJrSAkHV7ruCGCowp-QxPRM9SvZzOmL4OQskxCi5/exec'; 
+/* ===== 設定結束 ===== */
+
+let selDay='',selShift='',selCode='';
+let shift=null,orders=[],cnt=1,curOp='a',isTest=false;
+let newItems={},newExtras=[],payId=null,allShifts=[];
+let navStack=[];
+const nt=n=>'NT$'+Math.round(n).toLocaleString();
+const ts=()=>new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+const onum=o=>'#'+String(o.id).padStart(3,'0');
+const opName=pos=>pos==='a'?shift.staffA:shift.staffB;
+const opTag=pos=>pos==='a'
+  ?`<span class="op-a">${shift.staffA}</span>`
+  :`<span class="op-b">${shift.staffB}</span>`;
+
+/* ---- 隱藏後台機關 ---- */
+let unlockCnt = 0;
+let unlockTimer = null;
+function unlockAdmin(){
+  unlockCnt++;
+  clearTimeout(unlockTimer);
+  unlockTimer = setTimeout(()=> unlockCnt = 0, 1500); 
+  if(unlockCnt >= 5){
+    const p = document.getElementById('admin-panel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    unlockCnt = 0;
+  }
+}
+
+/* ---- 防護機制 1：關閉攔截 ---- */
+window.addEventListener('beforeunload', function (e) {
+  const hasUnexported = allShifts.some(s => !s.exported);
+  const isShiftActive = shift !== null;
+  if (hasUnexported || isShiftActive) {
+    e.preventDefault();
+    e.returnValue = ''; 
+  }
+});
+
+/* ---- 防護機制 2：歷史紀錄陷阱 ---- */
+history.replaceState({trap: true}, '', location.pathname);
+history.pushState({screen: 's-setup'}, '', location.pathname);
+
+function show(id,push=true){
+  const prev=document.querySelector('.screen.active');
+  if(push && prev) navStack.push(prev.id);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  history.pushState({screen: id}, '', location.pathname);
+}
+
+function navBack(){
+  if(navStack.length===0){
+    show('s-setup', false);
+    navStack=[];
+    return;
+  }
+  const prev=navStack.pop();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(prev).classList.add('active');
+  window.scrollTo(0,0);
+  history.replaceState({screen: prev}, '', location.pathname);
+  if(prev==='s-shift') renderShift();
+}
+
+window.addEventListener('popstate', function(e){
+  if(navStack.length > 0){
+    navBack();
+  } else {
+    if(e.state && e.state.trap){
+      history.pushState({screen: 's-setup'}, '', location.pathname);
+      const w = document.getElementById('hist-wrap');
+      w.style.display = 'block';
+      const msgEl = document.getElementById('exp-msg');
+      msgEl.className = 'notice n-err';
+      msgEl.innerHTML = '⚠️ <strong>安全攔截：</strong>為防止資料遺失，已阻擋「返回鍵」。若要離開，請確認已匯出並「直接關閉分頁」。';
+      msgEl.style.display = 'block';
+    }
+  }
+});
+
+/* ---- 防呆資料載入 ---- */
+function saveProds(){try{localStorage.setItem('lw_prods',JSON.stringify(PRODUCTS));}catch(e){}}
+function loadProds(){
+  try{
+    const d=localStorage.getItem('lw_prods');
+    if(d) {
+      const parsed = JSON.parse(d);
+      if(Array.isArray(parsed)) PRODUCTS = parsed;
+    }
+  }catch(e){}
+}
+function renderSetupProds(){
+  document.getElementById('prod-setup-list').innerHTML=PRODUCTS.map((p,i)=>`
+    <span class="member-chip">${p.n} ($${p.p})
+      <button class="del-member" onclick="delSetupProd(${i})" title="移除">×</button>
+    </span>`).join('');
+}
+function addSetupProd(){
+  const n = document.getElementById('new-prod-name').value.trim();
+  const p = parseFloat(document.getElementById('new-prod-price').value);
+  if(!n || isNaN(p)){alert('請輸入名稱與售價');return;}
+  if(PRODUCTS.find(x=>x.n===n)){alert('名稱已存在');return;}
+  PRODUCTS.push({n, p});saveProds();
+  document.getElementById('new-prod-name').value='';document.getElementById('new-prod-price').value='';
+  renderSetupProds();
+}
+function delSetupProd(i){
+  if(!window.confirm(`確定移除「${PRODUCTS[i].n}」？`))return;
+  PRODUCTS.splice(i, 1);saveProds();renderSetupProds();
+}
+
+function saveMem(){
+  try{
+    localStorage.setItem('lw_members_core',JSON.stringify(MEMBERS_CORE));
+    localStorage.setItem('lw_members_res',JSON.stringify(MEMBERS_RESERVE));
+  }catch(e){}
+}
+function loadMem(){
+  try{
+    const d1=localStorage.getItem('lw_members_core');
+    const d2=localStorage.getItem('lw_members_res');
+    if(d1) { const p1 = JSON.parse(d1); if(Array.isArray(p1)) MEMBERS_CORE = p1; }
+    if(d2) { const p2 = JSON.parse(d2); if(Array.isArray(p2)) MEMBERS_RESERVE = p2; }
+  }catch(e){}
+}
+function renderMemberList(){
+  document.getElementById('member-list-core').innerHTML=MEMBERS_CORE.map((m,i)=>`
+    <span class="member-chip">${m}
+      <button class="del-member" onclick="delMember('core', ${i})" title="移除">×</button>
+    </span>`).join('');
+  document.getElementById('member-list-reserve').innerHTML=MEMBERS_RESERVE.map((m,i)=>`
+    <span class="member-chip">${m}
+      <button class="del-member" onclick="delMember('reserve', ${i})" title="移除">×</button>
+    </span>`).join('');
+  const coreOpts=MEMBERS_CORE.map(m=>`<option value="${m}">${m}</option>`).join('');
+  const resOpts=MEMBERS_RESERVE.map(m=>`<option value="${m}">${m}</option>`).join('');
+  let allOpts = '';
+  if(MEMBERS_CORE.length > 0) allOpts += `<optgroup label="幹部">${coreOpts}</optgroup>`;
+  if(MEMBERS_RESERVE.length > 0) allOpts += `<optgroup label="儲備幹部">${resOpts}</optgroup>`;
+  document.getElementById('sel-a').innerHTML=allOpts;
+  document.getElementById('sel-b').innerHTML=allOpts;
+  if(MEMBERS_CORE.length > 1) { document.getElementById('sel-b').selectedIndex=1; }
+}
+function addMember(){
+  const type = document.getElementById('new-member-type').value;
+  const inp = document.getElementById('new-member-input');
+  const name = inp.value.trim();
+  if(!name){alert('請輸入姓名');return}
+  if(MEMBERS_CORE.includes(name) || MEMBERS_RESERVE.includes(name)){alert('人員已在名單中');return}
+  if(type === 'core') MEMBERS_CORE.push(name); else MEMBERS_RESERVE.push(name);
+  saveMem();inp.value='';renderMemberList();
+}
+function delMember(type, i){
+  const name = type === 'core' ? MEMBERS_CORE[i] : MEMBERS_RESERVE[i];
+  if(!window.confirm(`確定移除「${name}」？`))return;
+  if(type === 'core') MEMBERS_CORE.splice(i,1); else MEMBERS_RESERVE.splice(i,1);
+  saveMem();renderMemberList();
+}
+
+/* ---- Init ---- */
+function init(){
+  loadMem();loadProds(); 
+  const db=document.getElementById('day-btns');
+  if(db){
+    DAYS.forEach(d=>{
+      const b=document.createElement('button');b.className='day-btn';b.textContent=d;
+      b.onclick=()=>{document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selDay=d};
+      db.appendChild(b);
+    });
+  }
+  renderMemberList();renderSetupProds();loadShifts();
+  document.getElementById('new-member-input').addEventListener('keydown',e=>{if(e.key==='Enter')addMember()});
+  document.getElementById('new-prod-price').addEventListener('keydown',e=>{if(e.key==='Enter')addSetupProd()});
+}
+
+/* ---- Shift setup ---- */
+function pickShift(el,name,code){
+  document.querySelectorAll('.shift-btn').forEach(b=>{b.className='shift-btn';});
+  el.className=`shift-btn sel-${code}`; selShift=name;selCode=code;
+}
+function startShift(test=false){
+  if(!selDay){alert('請選擇日期');return}
+  if(!selShift){alert('請選擇時段');return}
+  const a=document.getElementById('sel-a').value,b=document.getElementById('sel-b').value;
+  if(a===b){alert('A 位與 B 位不能是同一人');return}
+  isTest=test; shift={day:selDay,shift:selShift,code:selCode,staffA:a,staffB:b,startAt:ts(),isTest:test};
+  orders=[];cnt=1;curOp='a';
+  document.getElementById('shift-badge').textContent=`${shift.day} ${shift.shift}`;
+  document.getElementById('shift-badge').className=`badge b${shift.code}`;
+  document.getElementById('shift-staff').textContent=`${a}・${b}${test?' 🧪 測試':''}`;
+  document.getElementById('test-banner-shift').style.display=test?'flex':'none';
+  document.getElementById('op-btn-a').textContent=a+' (A)';
+  document.getElementById('op-btn-b').textContent=b+' (B)';
+  updateOpUI();updateM();renderShift();navStack=[];show('s-shift',false);
+}
+function startTestShift(){
+  if(!selDay){const first=document.querySelector('.day-btn');if(first){first.click()}}
+  if(!selShift){document.getElementById('sb-m').click();}
+  startShift(true);
+}
+
+/* ---- Operator UI ---- */
+function switchOp(pos){curOp=pos;updateOpUI()}
+function updateOpUI(){
+  document.getElementById('op-btn-a').className='op-btn'+(curOp==='a'?' sel-a':'');
+  document.getElementById('op-btn-b').className='op-btn'+(curOp==='b'?' sel-b':'');
+  const ind=document.getElementById('op-indicator'),nm=document.getElementById('op-ind-name'),ht=document.getElementById('op-ind-hint'),ic=document.getElementById('op-ind-icon');
+  if(curOp==='a'){
+    ind.className='op-indicator op-ind-a';nm.className='op-ind-name op-ind-name-a';
+    nm.textContent=shift.staffA+' (A 位)';ht.className='op-ind-hint op-ind-hint-a';
+    ht.textContent='此人建立的訂單將標記為 A';ic.setAttribute('stroke','var(--blue)');
+  } else {
+    ind.className='op-indicator op-ind-b';nm.className='op-ind-name op-ind-name-b';
+    nm.textContent=shift.staffB+' (B 位)';ht.className='op-ind-hint op-ind-hint-b';
+    ht.textContent='此人建立的訂單將標記為 B';ic.setAttribute('stroke','var(--coral)');
+  }
+}
+
+/* ---- Metrics ---- */
+function updateM(){
+  const paid=orders.filter(o=>o.status==='paid'),pend=orders.filter(o=>o.status==='pending');
+  document.getElementById('m-tot').textContent=orders.length;
+  document.getElementById('m-pend').textContent=pend.length;
+  document.getElementById('m-paid').textContent=paid.length;
+  document.getElementById('m-rev').textContent=nt(paid.reduce((s,o)=>s+o.total,0));
+}
+
+/* ---- Render orders ---- */
+function renderShift(){
+  const pend=orders.filter(o=>o.status==='pending');
+  document.getElementById('pending-section').style.display=pend.length?'block':'none';
+  document.getElementById('orders-pend').innerHTML=pend.map(o=>ocard(o,true)).join('');
+  const all=orders.slice().reverse();
+  document.getElementById('orders-all').innerHTML=all.length?all.map(o=>ocard(o,false)).join(''):'<div class="empty">尚無訂單</div>';
+}
+function ocard(o,showPay){
+  const rows=o.items.map(i=>`<div class="oi"><span>${i.n}</span><span class="oi-qty">×${i.q}</span><span class="oi-sub">${nt(i.p*i.q)}</span></div>`).join('');
+  const st=o.status==='paid'?'<span class="tag tag-paid">已收款</span>':o.status==='void'?'<span class="tag tag-void">作廢</span>':'<span class="tag tag-pend">待收款</span>';
+  const testT=o.isTest?'<span class="tag tag-test">測試</span>':'';
+  const opT=o.op?opTag(o.op):'';
+  const payBtn=showPay&&o.status==='pending'?`<button class="btn btn-g btn-xs" onclick="event.stopPropagation();openPay(${o.id})" style="flex-shrink:0">收款</button>`:'';
+  const voidBtn=!showPay&&o.status==='pending'?`<button class="btn btn-d btn-xs" onclick="event.stopPropagation();voidOrder(${o.id})" style="flex-shrink:0">作廢</button>`:'';
+  const done=o.status==='paid'?`<div class="pay-done">實收 ${nt(o.rcv)}　找零 ${nt(o.chg)}　${o.paidAt}</div>`:'';
+  const memoHtml = (o.memo && o.memo.trim() !== '') ? `<div style="font-size:12px;color:#854F0B;margin-top:6px;background:#FFFBEA;padding:4px 8px;border-radius:4px;">備註: ${o.memo}</div>` : '';
+  return`<div class="order-card"><div class="order-hd" onclick="tog(this)"><span class="onum">${onum(o)}</span><div class="osum"><div class="oamt">${nt(o.total)} ${opT} ${testT}</div><div class="oprev">${o.items.map(i=>i.n+'×'+i.q).join('、')}</div></div><div style="display:flex;align-items:center;gap:4px;flex-shrink:0">${st}${payBtn}${voidBtn}</div></div><div class="order-body"><div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opT}<span style="font-size:12px;color:#aeaeb2;margin-left:4px">${o.at}</span></div>${rows}<div class="ototal"><span>合計</span><span style="color:var(--green)">${nt(o.total)}</span></div>${memoHtml}</div>${done}</div>`;
+}
+function tog(el){el.nextElementSibling.classList.toggle('open')}
+function voidOrder(id){
+  if(!window.confirm('確定作廢此筆訂單？'))return;
+  const o=orders.find(x=>x.id===id);if(o)o.status='void';
+  updateM();renderShift();
+}
+
+/* ---- New order ---- */
+function openNew(){
+  newItems={}; PRODUCTS.forEach(p=>{newItems[p.n]=0}); newExtras=[];
+  document.getElementById('new-num').textContent=`訂單 ${onum({id:cnt})}`;
+  const bar=document.getElementById('new-op-bar');
+  bar.className='op-indicator '+(curOp==='a'?'op-ind-a':'op-ind-b');
+  document.getElementById('new-op-role').textContent=curOp==='a'?'A 位操作員':'B 位操作員';
+  const nm=document.getElementById('new-op-name');
+  nm.className='op-ind-name '+(curOp==='a'?'op-ind-name-a':'
