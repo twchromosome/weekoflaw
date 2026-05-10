@@ -153,7 +153,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
 </head>
 <body>
 <div id="app">
-<!-- ====== SETUP ====== -->
 <div id="s-setup" class="screen active">
   <div class="topbar">
     <div class="topbar-row">
@@ -178,7 +177,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
       </div>
     </div></div>
     
-    <!-- 人員管理區塊 -->
     <div class="card"><div class="ci">
       <div class="cl">值班人員</div>
       <div class="g2" style="margin-bottom:12px">
@@ -200,7 +198,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
       </div>
     </div></div>
 
-    <!-- 商品管理區塊 -->
     <div class="card"><div class="ci">
       <div class="cl">常駐商品 / 優惠方案管理</div>
       <div class="member-list" id="prod-setup-list" style="margin-bottom:12px"></div>
@@ -226,7 +223,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     </div>
   </div>
 </div>
-<!-- ====== SHIFT MAIN ====== -->
 <div id="s-shift" class="screen">
   <div class="topbar">
     <div class="topbar-row">
@@ -273,7 +269,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     <div id="orders-all"><div class="empty">尚無訂單</div></div>
   </div>
 </div>
-<!-- ====== NEW ORDER ====== -->
 <div id="s-new" class="screen">
   <div class="topbar">
     <div class="topbar-row">
@@ -314,7 +309,6 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
     </div></div>
   </div>
 </div>
-<!-- ====== PAYMENT ====== -->
 <div id="s-pay" class="screen">
   <div class="topbar">
     <div class="topbar-row">
@@ -361,14 +355,11 @@ label{font-size:13px;color:#6e6e73;display:block;margin-bottom:4px;font-weight:5
   </div>
 </div>
 </div>
-<!-- #app -->
-
 <script>
-/* ===== 設定 ===== */
-let MEMBERS_CORE=['許紘睿','陳怡岑','李懿珊','林靜玟','陳竫媗','顏紹耘','陳昱亘','陶玉慧','陳耀豐','張群佑','張翊閎','藍于驊','方鈺瑜','簡宇彥','林祺臻'];
-let MEMBERS_RESERVE=['賴杏恩','吳宥勝','羅允威','陳采靖','吳安琪','韓洛君','鄭天愛','楊旻姍','楊逸宇','陳稚昇','王立綺','林聖倫','雲馨葳','丁郁婷','尹邦臻','張祐容','江俊諺','郭家妤'];
+/* ===== 設定 (正式鎖定版) ===== */
+let MEMBERS_CORE=['許紘睿(總召)','陳怡岑(副召)','林靜玟','陳竫媗','陳昱亘','陳耀豐','張群佑','張翊閎','李懿珊','方鈺瑜','顏紹耘','陶玉慧','簡宇彥','藍于驊','林祺臻'];
+let MEMBERS_RESERVE=['賴杏恩','吳宥陞','羅允威','陳采靖','吳安琪','韓洛君','鄭天愛','楊旻姍','楊逸宇','陳稚昇','王立綺','林聖倫','雲馨葳','丁郁婷','張祐容','江俊諺','郭家妤','林沁妤','柯湘涵'];
 
-// V9 更新：預設商品清單
 let PRODUCTS=[
   {n:'泡泡水',p:20},
   {n:'打火機',p:50},
@@ -401,7 +392,7 @@ const opTag=pos=>pos==='a'
   ?`<span class="op-a">${shift.staffA}</span>`
   :`<span class="op-b">${shift.staffB}</span>`;
 
-/* ---- 防護機制 1：關閉/重整網頁攔截 (Before Unload) ---- */
+/* ---- 防護機制 1：關閉攔截 ---- */
 window.addEventListener('beforeunload', function (e) {
   const hasUnexported = allShifts.some(s => !s.exported);
   const isShiftActive = shift !== null;
@@ -411,7 +402,7 @@ window.addEventListener('beforeunload', function (e) {
   }
 });
 
-/* ---- 防護機制 2：歷史紀錄陷阱 (History Trap) ---- */
+/* ---- 防護機制 2：歷史紀錄陷阱 ---- */
 history.replaceState({trap: true}, '', location.pathname);
 history.pushState({screen: 's-setup'}, '', location.pathname);
 
@@ -448,22 +439,15 @@ window.addEventListener('popstate', function(e){
       w.style.display = 'block';
       const msgEl = document.getElementById('exp-msg');
       msgEl.className = 'notice n-err';
-      msgEl.innerHTML = '⚠️ <strong>安全攔截：</strong>為防止資料遺失，已阻擋「返回鍵」操作。若要離開，請確認已匯出資料並「直接關閉分頁」。';
+      msgEl.innerHTML = '⚠️ <strong>安全攔截：</strong>為防止資料遺失，已阻擋「返回鍵」。若要離開，請確認已匯出並「直接關閉分頁」。';
       msgEl.style.display = 'block';
     }
   }
 });
 
 /* ---- Products Persistence ---- */
-function saveProds(){
-  try{localStorage.setItem('lw_prods',JSON.stringify(PRODUCTS));}catch(e){}
-}
-function loadProds(){
-  try{
-    const d=localStorage.getItem('lw_prods');
-    if(d) PRODUCTS=JSON.parse(d);
-  }catch(e){}
-}
+function saveProds(){try{localStorage.setItem('lw_prods',JSON.stringify(PRODUCTS));}catch(e){}}
+function loadProds(){try{const d=localStorage.getItem('lw_prods');if(d) PRODUCTS=JSON.parse(d);}catch(e){}}
 function renderSetupProds(){
   document.getElementById('prod-setup-list').innerHTML=PRODUCTS.map((p,i)=>`
     <span class="member-chip">${p.n} ($${p.p})
@@ -473,20 +457,15 @@ function renderSetupProds(){
 function addSetupProd(){
   const n = document.getElementById('new-prod-name').value.trim();
   const p = parseFloat(document.getElementById('new-prod-price').value);
-  if(!n || isNaN(p)){alert('請輸入完整的商品名稱與售價');return;}
-  if(PRODUCTS.find(x=>x.n===n)){alert('此商品或方案名稱已存在');return;}
-  
-  PRODUCTS.push({n, p});
-  saveProds();
-  document.getElementById('new-prod-name').value='';
-  document.getElementById('new-prod-price').value='';
+  if(!n || isNaN(p)){alert('請輸入名稱與售價');return;}
+  if(PRODUCTS.find(x=>x.n===n)){alert('名稱已存在');return;}
+  PRODUCTS.push({n, p});saveProds();
+  document.getElementById('new-prod-name').value='';document.getElementById('new-prod-price').value='';
   renderSetupProds();
 }
 function delSetupProd(i){
-  if(!window.confirm(`確定移除常駐商品「${PRODUCTS[i].n}」？\n(移除後不影響過去已經建立的歷史訂單)`))return;
-  PRODUCTS.splice(i, 1);
-  saveProds();
-  renderSetupProds();
+  if(!window.confirm(`確定移除「${PRODUCTS[i].n}」？`))return;
+  PRODUCTS.splice(i, 1);saveProds();renderSetupProds();
 }
 
 /* ---- Members Persistence ---- */
@@ -500,14 +479,8 @@ function loadMem(){
   try{
     const d1=localStorage.getItem('lw_members_core');
     const d2=localStorage.getItem('lw_members_res');
-    const dOld=localStorage.getItem('lw_members');
-    if(!d1 && !d2 && dOld){
-      MEMBERS_CORE = JSON.parse(dOld);
-      saveMem(); 
-    } else {
-      if(d1) MEMBERS_CORE=JSON.parse(d1);
-      if(d2) MEMBERS_RESERVE=JSON.parse(d2);
-    }
+    if(d1) MEMBERS_CORE=JSON.parse(d1);
+    if(d2) MEMBERS_RESERVE=JSON.parse(d2);
   }catch(e){}
 }
 function renderMemberList(){
@@ -515,67 +488,45 @@ function renderMemberList(){
     <span class="member-chip">${m}
       <button class="del-member" onclick="delMember('core', ${i})" title="移除">×</button>
     </span>`).join('');
-    
   document.getElementById('member-list-reserve').innerHTML=MEMBERS_RESERVE.map((m,i)=>`
     <span class="member-chip">${m}
       <button class="del-member" onclick="delMember('reserve', ${i})" title="移除">×</button>
     </span>`).join('');
-
   const coreOpts=MEMBERS_CORE.map(m=>`<option value="${m}">${m}</option>`).join('');
   const resOpts=MEMBERS_RESERVE.map(m=>`<option value="${m}">${m}</option>`).join('');
-  
   let allOpts = '';
   if(MEMBERS_CORE.length > 0) allOpts += `<optgroup label="幹部">${coreOpts}</optgroup>`;
   if(MEMBERS_RESERVE.length > 0) allOpts += `<optgroup label="儲備幹部">${resOpts}</optgroup>`;
-
   document.getElementById('sel-a').innerHTML=allOpts;
   document.getElementById('sel-b').innerHTML=allOpts;
-  
-  if(MEMBERS_CORE.length > 1) {
-    document.getElementById('sel-b').selectedIndex=1;
-  } else if (MEMBERS_RESERVE.length > 0 && MEMBERS_CORE.length === 1) {
-    document.getElementById('sel-b').selectedIndex=1;
-  }
+  if(MEMBERS_CORE.length > 1) { document.getElementById('sel-b').selectedIndex=1; }
 }
 function addMember(){
   const type = document.getElementById('new-member-type').value;
   const inp = document.getElementById('new-member-input');
   const name = inp.value.trim();
   if(!name){alert('請輸入姓名');return}
-  if(MEMBERS_CORE.includes(name) || MEMBERS_RESERVE.includes(name)){alert('此人員已在名單中');return}
-  
-  if(type === 'core') MEMBERS_CORE.push(name);
-  else MEMBERS_RESERVE.push(name);
-  
-  saveMem();
-  inp.value='';
-  renderMemberList();
+  if(MEMBERS_CORE.includes(name) || MEMBERS_RESERVE.includes(name)){alert('人員已在名單中');return}
+  if(type === 'core') MEMBERS_CORE.push(name); else MEMBERS_RESERVE.push(name);
+  saveMem();inp.value='';renderMemberList();
 }
 function delMember(type, i){
   const name = type === 'core' ? MEMBERS_CORE[i] : MEMBERS_RESERVE[i];
   if(!window.confirm(`確定移除「${name}」？`))return;
-  
-  if(type === 'core') MEMBERS_CORE.splice(i,1);
-  else MEMBERS_RESERVE.splice(i,1);
-  
-  saveMem();
-  renderMemberList();
+  if(type === 'core') MEMBERS_CORE.splice(i,1); else MEMBERS_RESERVE.splice(i,1);
+  saveMem();renderMemberList();
 }
 
 /* ---- Init ---- */
 function init(){
-  loadMem();
-  loadProds(); 
-  
+  loadMem();loadProds(); 
   const db=document.getElementById('day-btns');
   DAYS.forEach(d=>{
     const b=document.createElement('button');b.className='day-btn';b.textContent=d;
     b.onclick=()=>{document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selDay=d};
     db.appendChild(b);
   });
-  renderMemberList();
-  renderSetupProds();
-  loadShifts();
+  renderMemberList();renderSetupProds();loadShifts();
   document.getElementById('new-member-input').addEventListener('keydown',e=>{if(e.key==='Enter')addMember()});
   document.getElementById('new-prod-price').addEventListener('keydown',e=>{if(e.key==='Enter')addSetupProd()});
 }
@@ -583,16 +534,14 @@ function init(){
 /* ---- Shift setup ---- */
 function pickShift(el,name,code){
   document.querySelectorAll('.shift-btn').forEach(b=>{b.className='shift-btn';});
-  el.className=`shift-btn sel-${code}`;
-  selShift=name;selCode=code;
+  el.className=`shift-btn sel-${code}`; selShift=name;selCode=code;
 }
 function startShift(test=false){
   if(!selDay){alert('請選擇日期');return}
   if(!selShift){alert('請選擇時段');return}
   const a=document.getElementById('sel-a').value,b=document.getElementById('sel-b').value;
   if(a===b){alert('A 位與 B 位不能是同一人');return}
-  isTest=test;
-  shift={day:selDay,shift:selShift,code:selCode,staffA:a,staffB:b,startAt:ts(),isTest:test};
+  isTest=test; shift={day:selDay,shift:selShift,code:selCode,staffA:a,staffB:b,startAt:ts(),isTest:test};
   orders=[];cnt=1;curOp='a';
   document.getElementById('shift-badge').textContent=`${shift.day} ${shift.shift}`;
   document.getElementById('shift-badge').className=`badge b${shift.code}`;
@@ -600,8 +549,7 @@ function startShift(test=false){
   document.getElementById('test-banner-shift').style.display=test?'flex':'none';
   document.getElementById('op-btn-a').textContent=a+' (A)';
   document.getElementById('op-btn-b').textContent=b+' (B)';
-  updateOpUI();updateM();renderShift();
-  navStack=[];show('s-shift',false);
+  updateOpUI();updateM();renderShift();navStack=[];show('s-shift',false);
 }
 function startTestShift(){
   if(!selDay){const first=document.querySelector('.day-btn');if(first){first.click()}}
@@ -652,19 +600,7 @@ function ocard(o,showPay){
   const voidBtn=!showPay&&o.status==='pending'?`<button class="btn btn-d btn-xs" onclick="event.stopPropagation();voidOrder(${o.id})" style="flex-shrink:0">作廢</button>`:'';
   const done=o.status==='paid'?`<div class="pay-done">實收 ${nt(o.rcv)}　找零 ${nt(o.chg)}　${o.paidAt}</div>`:'';
   const memoHtml = (o.memo && o.memo.trim() !== '') ? `<div style="font-size:12px;color:#854F0B;margin-top:6px;background:#FFFBEA;padding:4px 8px;border-radius:4px;">備註: ${o.memo}</div>` : '';
-  
-  return`<div class="order-card">
-    <div class="order-hd" onclick="tog(this)">
-      <span class="onum">${onum(o)}</span>
-      <div class="osum"><div class="oamt">${nt(o.total)} ${opT} ${testT}</div><div class="oprev">${o.items.map(i=>i.n+'×'+i.q).join('、')}</div></div>
-      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">${st}${payBtn}${voidBtn}</div>
-    </div>
-    <div class="order-body">
-      <div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opT}<span style="font-size:12px;color:#aeaeb2;margin-left:4px">${o.at}</span></div>
-      ${rows}<div class="ototal"><span>合計</span><span style="color:var(--green)">${nt(o.total)}</span></div>
-      ${memoHtml}
-    </div>${done}
-  </div>`;
+  return`<div class="order-card"><div class="order-hd" onclick="tog(this)"><span class="onum">${onum(o)}</span><div class="osum"><div class="oamt">${nt(o.total)} ${opT} ${testT}</div><div class="oprev">${o.items.map(i=>i.n+'×'+i.q).join('、')}</div></div><div style="display:flex;align-items:center;gap:4px;flex-shrink:0">${st}${payBtn}${voidBtn}</div></div><div class="order-body"><div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opT}<span style="font-size:12px;color:#aeaeb2;margin-left:4px">${o.at}</span></div>${rows}<div class="ototal"><span>合計</span><span style="color:var(--green)">${nt(o.total)}</span></div>${memoHtml}</div>${done}</div>`;
 }
 function tog(el){el.nextElementSibling.classList.toggle('open')}
 function voidOrder(id){
@@ -675,10 +611,7 @@ function voidOrder(id){
 
 /* ---- New order ---- */
 function openNew(){
-  newItems={};
-  PRODUCTS.forEach(p=>{newItems[p.n]=0});
-  newExtras=[];
-  
+  newItems={}; PRODUCTS.forEach(p=>{newItems[p.n]=0}); newExtras=[];
   document.getElementById('new-num').textContent=`訂單 ${onum({id:cnt})}`;
   const bar=document.getElementById('new-op-bar');
   bar.className='op-indicator '+(curOp==='a'?'op-ind-a':'op-ind-b');
@@ -687,22 +620,14 @@ function openNew(){
   nm.className='op-ind-name '+(curOp==='a'?'op-ind-name-a':'op-ind-name-b');
   nm.textContent=opName(curOp);
   document.getElementById('new-op-tag').innerHTML=opTag(curOp);
-  const footer=document.getElementById('new-footer');
-  const sb=document.getElementById('submit-btn');
+  const footer=document.getElementById('new-footer'); const sb=document.getElementById('submit-btn');
   if(curOp==='a'){footer.style.background='#EEEDFE';footer.style.borderColor='#AFA9EC';document.getElementById('new-total').style.color='var(--purple)';sb.style.background='var(--green)'}
   else{footer.style.background=`var(--coral-l)`;footer.style.borderColor='#F0997B';document.getElementById('new-total').style.color='var(--coral)';sb.style.background='var(--coral)'}
   renderProds();show('s-new');
 }
 function renderProds(){
   document.getElementById('prod-list').innerHTML=PRODUCTS.map(p=>`
-    <div class="prod-row">
-      <div style="flex:1"><div class="pname">${p.n}</div><div class="pprice">${nt(p.p)}</div></div>
-      <div class="qctrl">
-        <button class="qb" onclick="chg('${p.n}',-1)">−</button>
-        <span class="qn" id="q${p.n}">${newItems[p.n]||0}</span>
-        <button class="qb" onclick="chg('${p.n}',1)">+</button>
-      </div>
-    </div>`).join('');
+    <div class="prod-row"><div style="flex:1"><div class="pname">${p.n}</div><div class="pprice">${nt(p.p)}</div></div><div class="qctrl"><button class="qb" onclick="chg('${p.n}',-1)">−</button><span class="qn" id="q${p.n}">${newItems[p.n]||0}</span><button class="qb" onclick="chg('${p.n}',1)">+</button></div></div>`).join('');
   renderExtras();updTotal();
 }
 function chg(name,d){
@@ -712,9 +637,7 @@ function chg(name,d){
 }
 function renderExtras(){
   const el=document.getElementById('extra-list');
-  el.innerHTML=newExtras.length?'<div style="margin-top:10px">'+newExtras.map((e,i)=>`
-    <div class="prod-row"><div style="flex:1"><div class="pname">${e.n} <span class="ctag">自訂</span></div><div class="pprice">${nt(e.p)} × ${e.q} = ${nt(e.p*e.q)}</div></div>
-    <button class="btn btn-d btn-xs" onclick="rmEx(${i})">移除</button></div>`).join('')+'</div>':'';
+  el.innerHTML=newExtras.length?'<div style="margin-top:10px">'+newExtras.map((e,i)=>`<div class="prod-row"><div style="flex:1"><div class="pname">${e.n} <span class="ctag">自訂</span></div><div class="pprice">${nt(e.p)} × ${e.q} = ${nt(e.p*e.q)}</div></div><button class="btn btn-d btn-xs" onclick="rmEx(${i})">移除</button></div>`).join('')+'</div>':'';
 }
 function addExtra(){
   const n=document.getElementById('ex-n').value.trim(),p=parseFloat(document.getElementById('ex-p').value)||0,q=parseInt(document.getElementById('ex-q').value)||1;
@@ -727,16 +650,12 @@ function rmEx(i){newExtras.splice(i,1);renderExtras();updTotal()}
 function getTotal(){let s=0;PRODUCTS.forEach(p=>{s+=p.p*(newItems[p.n]||0)});newExtras.forEach(e=>{s+=e.p*e.q});return s}
 function updTotal(){document.getElementById('new-total').textContent=nt(getTotal())}
 function submitOrder(){
-  const items=[];
-  PRODUCTS.forEach(p=>{if((newItems[p.n]||0)>0)items.push({n:p.n,p:p.p,q:newItems[p.n]})});
+  const items=[]; PRODUCTS.forEach(p=>{if((newItems[p.n]||0)>0)items.push({n:p.n,p:p.p,q:newItems[p.n]})});
   newExtras.forEach(e=>items.push({n:e.n,p:e.p,q:e.q}));
   if(!items.length){alert('請至少選擇一項商品');return}
   const o={id:cnt++,items,total:getTotal(),status:'pending',op:curOp,operName:opName(curOp),at:ts(),paidAt:null,rcv:0,chg:0,isTest,memo:''};
-  orders.push(o);updateM();
-  payId=o.id;loadPay(o);
-  navStack=navStack.filter(s=>s!=='s-new');
-  navStack.push('s-shift');
-  show('s-pay');
+  orders.push(o);updateM(); payId=o.id;loadPay(o);
+  navStack=navStack.filter(s=>s!=='s-new'); navStack.push('s-shift'); show('s-pay');
 }
 
 /* ---- Payment ---- */
@@ -744,123 +663,62 @@ function openPay(id){const o=orders.find(x=>x.id===id);if(!o)return;payId=id;loa
 function loadPay(o){
   document.getElementById('pay-num').textContent=`訂單 ${onum(o)}`;
   document.getElementById('pay-exp').textContent=nt(o.total);
-  document.getElementById('pay-items').innerHTML=
-    `<div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opTag(o.op)}</div>`+
-    o.items.map(i=>`<div class="oi"><span>${i.n}</span><span class="oi-qty">×${i.q}</span><span class="oi-sub">${nt(i.p*i.q)}</span></div>`).join('');
-  document.getElementById('pay-rcv').value='';
-  document.getElementById('pay-chg').textContent='—';
-  document.getElementById('pay-chg').style.color='#aeaeb2';
-  document.getElementById('pay-memo').value = o.memo || '';
+  document.getElementById('pay-items').innerHTML=`<div class="op-row"><span style="font-size:12px;color:#6e6e73">操作員</span>${opTag(o.op)}</div>`+o.items.map(i=>`<div class="oi"><span>${i.n}</span><span class="oi-qty">×${i.q}</span><span class="oi-sub">${nt(i.p*i.q)}</span></div>`).join('');
+  document.getElementById('pay-rcv').value=''; document.getElementById('pay-chg').textContent='—';
+  document.getElementById('pay-chg').style.color='#aeaeb2'; document.getElementById('pay-memo').value = o.memo || '';
 }
 function calcChg(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
   const rcv=parseFloat(document.getElementById('pay-rcv').value)||0,chg=rcv-o.total;
-  const el=document.getElementById('pay-chg');
-  if(!rcv){el.textContent='—';el.style.color='#aeaeb2';return}
+  const el=document.getElementById('pay-chg'); if(!rcv){el.textContent='—';el.style.color='#aeaeb2';return}
   el.textContent=nt(chg);el.style.color=chg>=0?'var(--green)':'var(--red)';
 }
 function setRcv(n){document.getElementById('pay-rcv').value=n;calcChg()}
 function confirmPay(){
   const o=orders.find(x=>x.id===payId);if(!o)return;
   const rcv=parseFloat(document.getElementById('pay-rcv').value)||0;
-  if(!rcv){alert('請輸入實收金額');return}
-  if(rcv<o.total&&!window.confirm(`實收 ${nt(rcv)} 少於應收 ${nt(o.total)}，確定要繼續嗎？`))return;
-  o.status='paid';
-  o.rcv=rcv;
-  o.chg=rcv-o.total;
-  o.paidAt=ts();
-  o.memo=document.getElementById('pay-memo').value.trim();
-  updateM();renderShift();
-  navStack=navStack.filter(s=>s!=='s-pay');
-  show('s-shift',false);
+  if(!rcv){alert('請輸入金額');return}
+  if(rcv<o.total&&!window.confirm(`實收少於應收，確定繼續？`))return;
+  o.status='paid';o.rcv=rcv;o.chg=rcv-o.total;o.paidAt=ts();o.memo=document.getElementById('pay-memo').value.trim();
+  updateM();renderShift(); navStack=navStack.filter(s=>s!=='s-pay'); show('s-shift',false);
 }
 
 /* ---- End shift ---- */
 function endShift(){
   const pend=orders.filter(o=>o.status==='pending');
-  if(!window.confirm(`確定結束 ${shift.day} ${shift.shift}？\n共 ${orders.length} 筆訂單。${pend.length?'\n⚠️ 還有 '+pend.length+' 筆待收款！':''}`))return;
+  if(!window.confirm(`確定結班？${pend.length?'\n還有 '+pend.length+' 筆待收款！':''}`))return;
   const rev=orders.filter(o=>o.status==='paid').reduce((s,o)=>s+o.total,0);
   allShifts.push({...shift,orders:JSON.parse(JSON.stringify(orders)),orderCount:orders.length,paidCount:orders.filter(o=>o.status==='paid').length,revenue:rev,endAt:ts(),exported:false,isTest});
-  saveShifts();renderHist();shift=null;orders=[];
-  navStack=[];show('s-setup',false);
+  saveShifts();renderHist();shift=null;orders=[]; navStack=[];show('s-setup',false);
 }
 
 /* ---- Persist ---- */
 function saveShifts(){try{localStorage.setItem('lw5_shifts',JSON.stringify(allShifts))}catch(e){}}
 function loadShifts(){try{const d=localStorage.getItem('lw5_shifts');if(d)allShifts=JSON.parse(d)}catch(e){allShifts=[]}renderHist()}
-function delShift(i){
-  if(!window.confirm('確定要刪除這筆班次紀錄嗎？這將無法復原。')) return;
-  allShifts.splice(i, 1);
-  saveShifts();
-  renderHist();
-}
+function delShift(i){if(!window.confirm('確定刪除？')) return; allShifts.splice(i, 1);saveShifts();renderHist();}
 function renderHist(){
-  const w=document.getElementById('hist-wrap');
-  if(!allShifts.length){w.style.display='none';return}
+  const w=document.getElementById('hist-wrap'); if(!allShifts.length){w.style.display='none';return}
   w.style.display='block';
   document.getElementById('hist-list').innerHTML=allShifts.map((s,i)=>`
-    <div class="hist-row">
-      <div class="hist-info">
-        <div class="hist-name">
-          <span class="badge b${s.code}" style="font-size:12px">${s.day} ${s.shift}</span>
-          ${s.isTest?'<span class="tag tag-test">測試</span>':''}
-          <span style="font-size:12px;color:${s.exported?'var(--green)':'var(--amber)'}">${s.exported?'已匯出':'待匯出'}</span>
-        </div>
-        <div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:var(--green)">${nt(s.revenue)}</strong></div>
-      </div>
-      <button class="btn btn-d btn-sm" onclick="event.stopPropagation(); delShift(${i})">刪除</button>
-    </div>`).join('');
+    <div class="hist-row"><div class="hist-info"><div class="hist-name"><span class="badge b${s.code}">${s.day} ${s.shift}</span>${s.isTest?'<span class="tag tag-test">測試</span>':''}<span style="font-size:12px;color:${s.exported?'var(--green)':'var(--amber)'}">${s.exported?'已匯出':'待匯出'}</span></div><div class="hist-detail">${s.staffA}・${s.staffB} · ${s.paidCount}/${s.orderCount} 筆 · <strong style="color:var(--green)">${nt(s.revenue)}</strong></div></div><button class="btn btn-d btn-sm" onclick="event.stopPropagation(); delShift(${i})">刪除</button></div>`).join('');
 }
 
 /* ---- Export ---- */
 function exportAll(){
-  const pend=allShifts.filter(s=>!s.exported);
-  if(!pend.length){alert('沒有待匯出的班次');return}
+  const pend=allShifts.filter(s=>!s.exported); if(!pend.length){alert('沒有待匯出的班次');return}
   const headers=['日期','班次','A位','B位','訂單數','已收款數','班次營收(NT$)','訂單明細','開班','結班','備註'];
-  
   const rows=pend.map(s=> {
-    let memoParts = [];
-    if (s.isTest) memoParts.push('【測試資料】');
-    let orderMemos = s.orders
-      .filter(o => o.memo && o.memo.trim() !== '')
-      .map(o => `${onum(o)}備註: ${o.memo.trim()}`);
-    if (orderMemos.length > 0) memoParts.push(orderMemos.join(' | '));
-
-    return [
-      s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,
-      s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),
-      s.startAt,s.endAt,
-      memoParts.join(' | ') 
-    ];
+    let m = []; if (s.isTest) m.push('【測試資料】');
+    let om = s.orders.filter(o => o.memo && o.memo.trim() !== '').map(o => `${onum(o)}備註: ${o.memo.trim()}`);
+    if (om.length > 0) m.push(om.join(' | '));
+    return [s.day,s.shift,s.staffA,s.staffB,s.orderCount,s.paidCount,s.revenue,s.orders.map(o=>`${onum(o)}[${o.operName||'?'}]:${o.items.map(i=>i.n+'×'+i.q).join('+')}=NT$${o.total}(${o.status==='paid'?'已收':o.status==='void'?'作廢':'未收'})`).join(' | '),s.startAt,s.endAt,m.join(' | ')];
   });
-
   const msgEl=document.getElementById('exp-msg');
   if(GAS_URL){
-    fetch(GAS_URL,{
-      method:'POST',
-      redirect: 'follow', 
-      body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})
-    })
-      .then(r=>r.json())
-      .then(()=>{
-        pend.forEach(s=>s.exported=true);
-        saveShifts();
-        renderHist();
-        msgEl.className='notice n-ok';
-        msgEl.textContent=`✓ 成功匯出 ${pend.length} 個班次至 Google Sheet`;
-        msgEl.style.display='block';
-      })
-      .catch(()=>{
-        msgEl.className='notice n-err';
-        msgEl.textContent='連線失敗，請確認 Apps Script 部署權限是否有設為「所有人」';
-        msgEl.style.display='block';
-      });
-  } else {
-    pend.forEach(s=>s.exported=true);saveShifts();renderHist();
-    msgEl.className='notice n-warn';
-    msgEl.innerHTML=`<strong>${pend.length} 個班次已準備就緒</strong><br>請在 HTML 中填入 GAS_URL 後即可自動寫入 Google Sheet。`;
-    msgEl.style.display='block';
-  }
+    fetch(GAS_URL,{method:'POST',redirect: 'follow',body:JSON.stringify({sheetId:SHEET_ID,sheetName:'記帳單',headers,rows})})
+      .then(r=>r.json()).then(()=>{pend.forEach(s=>s.exported=true);saveShifts();renderHist();msgEl.className='notice n-ok';msgEl.textContent=`✓ 成功匯出 ${pend.length} 個班次`;msgEl.style.display='block';})
+      .catch(()=>{msgEl.className='notice n-err';msgEl.textContent='連線失敗，請檢查網路或權限';msgEl.style.display='block';});
+  } else { msgEl.className='notice n-warn';msgEl.innerHTML=`請先填入 GAS_URL`;msgEl.style.display='block'; }
 }
 init();
 </script>
